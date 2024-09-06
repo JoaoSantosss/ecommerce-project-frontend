@@ -1,10 +1,12 @@
 <script>
 import TheHeader from "./components/TheHeader.vue";
+import TheModal from "./components/TheModal.vue";
 
 export default {
   name: 'App',
   components: {
-    TheHeader
+    TheHeader,
+    TheModal
   }
 }
 
@@ -12,7 +14,10 @@ export default {
 
 <template>
 
-<TheHeader/>
+    <TheModal/>
+
+    <TheHeader/>
+
 
 </template>
 

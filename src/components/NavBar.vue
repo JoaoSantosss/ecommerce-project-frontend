@@ -6,6 +6,18 @@ export default {
             Itens_NavBar: [
                 {id: 1, icon: "home-outline", text: "Home"},
                 {id: 2, icon: "settings-outline", text: "Settings"},
+                {id: 3, icon: "hardware-chip-outline", text: "Hardware"},
+                {id: 1, icon: "home-outline", text: "Home"},
+                {id: 2, icon: "settings-outline", text: "Settings"},
+                {id: 3, icon: "hardware-chip-outline", text: "Hardware"},
+                {id: 1, icon: "home-outline", text: "Home"},
+                {id: 2, icon: "settings-outline", text: "Settings"},
+                {id: 3, icon: "hardware-chip-outline", text: "Hardware"},
+                {id: 1, icon: "home-outline", text: "Home"},
+                {id: 2, icon: "settings-outline", text: "Settings"},
+                {id: 3, icon: "hardware-chip-outline", text: "Hardware"},
+                {id: 1, icon: "home-outline", text: "Home"},
+                {id: 2, icon: "settings-outline", text: "Settings"},
                 {id: 3, icon: "hardware-chip-outline", text: "Hardware"}
             ],
             name_icons_show: false
@@ -17,6 +29,8 @@ export default {
         const nav = this.$refs.nav;
         const line_span = this.$refs.line_span;
 
+        const Page_background_NavBar = this.$refs.Page_background_NavBar
+
         const buttonNav = (container_hamburguer, Menu_hamburguer, nav, line_span)=> {
 
             if(Menu_hamburguer) {
@@ -26,10 +40,12 @@ export default {
                     nav.classList.toggle("active");
                     line_span.classList.toggle("active");
 
-                    if (nav.classList.contains("active")) {
+                    if (Menu_hamburguer.classList.contains("active")) {
                         this.name_icons_show = true
+                        Page_background_NavBar.style.display = 'flex'
                     } else {
                         this.name_icons_show = false
+                        Page_background_NavBar.style.display = 'none'
                     }
         
                 })
@@ -68,7 +84,7 @@ export default {
         </div>
     </nav>
 
-
+    <div ref="Page_background_NavBar" id="Page_background_NavBar"></div>
 
 </template>
 
@@ -86,7 +102,7 @@ nav {
     /* left: 0%;
     top: 0%; */
     background-image: linear-gradient(to bottom, #1A1723, #0D1418);
-    z-index: 100;
+    z-index: 900;
     transition: all 0.5s;
     display: flex;
     flex-direction: column;
@@ -197,6 +213,7 @@ nav.active {
     flex-direction: column;
     gap: 30px;
     padding-top: 20px;
+    overflow-y: auto;
 }
 
 .sections_NavBar {
@@ -215,6 +232,15 @@ nav.active {
 .text_itens_nav_bar {
     color: #ffffff;
     transition: all 0.5s;
+}
+
+#Page_background_NavBar {
+    position: fixed;
+    display: none;
+    background-color: rgba(0, 0, 0, 0.493);
+    width: 100vw;
+    height: 100vh;
+    z-index: 800;
 }
 
 </style>
