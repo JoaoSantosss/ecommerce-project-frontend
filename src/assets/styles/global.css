@@ -1,0 +1,28 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    width: 100vw;
+    min-height: 100vh;
+    border: 2px solid rgb(0, 17, 255);
+    overflow-x: hidden;
+}
+
+.container_main_center {
+    width: 80%;
+    margin: auto;
+    /* border: 2px solid red; */
+}
+
+:root {
+    --color--text: #ffffff;
+    --background--strong: #171717;
+}
+
+.Theme_Light {
+    --color--text: #ffffff;
+    --background--strong: #E8E8E8;
+}
