@@ -8,9 +8,12 @@ export default defineConfig({
   plugins: [
     vue(),
   ],
-  resolve: {
+  server: {
+    port: 3002, // Escolha a porta desejada, como 3001 ou outra
+  },
+  resolve:{
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
-    }
+    },
   }
 })

@@ -36,11 +36,12 @@ export default {
     overflow: auto;
     gap: 50px;
     padding: 70px 0;
-    /* z-index: 10000; */
+    /* z-index: 50; */
 }
 
 #list_full.active {
     left: 0%;
+    z-index: 100;
 }
 
 

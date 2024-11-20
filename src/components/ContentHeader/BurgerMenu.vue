@@ -14,15 +14,18 @@ export default {
     methods: {
         toggle_btn() {
             const hamburguerRef = this.$refs.hamburguerRef
+            const body = document.body
 
             hamburguerRef.classList.toggle('active');
 
             if(hamburguerRef.classList.contains('active')) {
+                body.style.overflowY = 'hidden'
                 this.ShowListFull = true
                 this.ShowShadow = true
                 this.$emit('PassValueShowListFull', this.ShowListFull)
                 this.$emit('PassValueShowShadow', this.ShowShadow)
             } else {
+                body.style.overflowY = 'scroll'
                 this.ShowListFull = false
                 this.ShowShadow = false
                 this.$emit('PassValueShowListFull', this.ShowListFull)

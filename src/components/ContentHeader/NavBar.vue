@@ -10,7 +10,8 @@ export default {
     data() {
         return {
             ShowListFull: false,
-            ShowShadow: false
+            ShowShadow: false,
+            valueTextInput: ''
         }
     },
     methods: {
@@ -20,6 +21,15 @@ export default {
         toggleValueBoolean(ValueBoolean) {
             this.ShowListFull = ValueBoolean;
             this.ShowShadow = ValueBoolean;
+        },
+        StopSubmit(event) {
+            event.preventDefault()
+        },
+        closeText() {
+            this.valueTextInput = ''
+        },
+        routerLogin(title, nameRouter) {
+            this.$router.push({ name: nameRouter, params: { title } });
         }
     }
 }
@@ -37,12 +47,33 @@ export default {
                     </div>
 
                     <div id="group_OptionsUserAndCart">
+                        <aside id="boxOptionsLoginRegister">
+                            <ion-icon name="person-circle-outline"></ion-icon>
+                            <p>
+                                Olá, <span @click="routerLogin('Login', 'PageLogin')">Entre</span> ou <br> <span @click="routerLogin('register', 'PageRegister')">Cadastre-se</span>
+                            </p>
+                        </aside>
 
+                        <aside id="box_cart">
+                            <p>Carrinho</p>
+                            <a href="">
+                                <ion-icon name="cart-outline"></ion-icon>
+                            </a>
+                        </aside>
                     </div>
                 </div>
 
                 <div id="container_search_field">
-                    <input type="text">
+                    <form id="form_SearchProduct" @submit="StopSubmit">
+                        <input type="text" name="input" id="input" v-model="valueTextInput" placeholder="Pesquise pelo produto desejado...">
+                        <button>
+                            <ion-icon name="search-outline"></ion-icon>
+                        </button>
+
+                        <button @click="closeText">
+                            <ion-icon name="close-outline"></ion-icon>
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -61,7 +92,7 @@ nav {
 
 #containerContentNavBar {
     width: 100%;
-    height: 8rem;
+    height: 9rem;
     display: flex;
     flex-direction: column;
     gap: 5px;
@@ -81,9 +112,75 @@ nav {
     align-items: center;
     gap: 20px;
 }
+
+#group_OptionsUserAndCart {
+    /* border: 2px solid red; */
+    width: 25%;
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+#boxOptionsLoginRegister {
+    width: 48%;
+    color: var(--color--text);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+#boxOptionsLoginRegister > ion-icon {
+    font-size: 2.5rem;
+}
+#boxOptionsLoginRegister > p > a {
+    color: var(--color--text);
+    text-decoration: none;
+}
+
+#box_cart {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    color: var(--color--text);
+}
+#box_cart > a > ion-icon {
+    font-size: 2rem;
+    color: var(--color--text);
+}
 #container_search_field {
     width: 100%;
     height: 50%;
     border: 1px solid rgb(0, 19, 128);
+    display: flex;
+    align-items: center;
+}
+
+#form_SearchProduct {
+    width: 100%;
+    /* padding: 10px; */
+    background: var(--background--input);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+}
+input {
+    background: transparent;
+    outline: none;
+    border: none;
+    width: 95%;
+    height: 100%;
+    color: var(--color--text);
+    font-size: 1.5rem;
+    padding: 10px;
+}
+
+#form_SearchProduct > button {
+    font-size: 2rem;
+    background: transparent;
+    border: none;
+    color: var(--color--text);
+    display: flex;
+    align-items: center;
 }
 </style>

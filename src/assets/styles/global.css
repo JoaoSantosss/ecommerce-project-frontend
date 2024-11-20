@@ -20,9 +20,12 @@ body {
 :root {
     --color--text: #ffffff;
     --background--strong: #171717;
+    --background--input: #2C2C2C;
+    
 }
 
 .Theme_Light {
     --color--text: #ffffff;
     --background--strong: #E8E8E8;
+    --background--input: #d6d6d6;
 }
