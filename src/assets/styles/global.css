@@ -9,6 +9,7 @@ body {
     min-height: 100vh;
     border: 2px solid rgb(0, 17, 255);
     overflow-x: hidden;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 .container_main_center {
