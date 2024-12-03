@@ -4,18 +4,38 @@ export default {
     data() {
         return {
             endpoint: 'http://localhost:8080',
-            common_user_data: {
-                name: '',
-                role: '',
+            dataLogin: {
                 email: '',
-                password: '',
-                cpf: ''
+                password: ''
             },
         }
     },
     methods: {
+        async GetDataLogin() {
+            try {
+                const response = await fetch(`${this.endpoint}/auth`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(this.dataLogin)
+                })
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json()
+
+                console.log('essa é a data:', data)
+
+            } catch (error) {
+                console.log('Não foi possivel fazer o login \n',  error)
+            }
+        },
         stopForm(Event) {
-            Event.preventDefault()
+            Event.preventDefault();
+            this.GetDataLogin()
         },
         BackHome(home, nameRouter) {
             this.$router.push({ name: nameRouter, params: { home } });
@@ -44,7 +64,8 @@ export default {
                 InputEvent.setAttribute('type', 'password')
                 ElementShoot_event.setAttribute('name', 'eye-off-outline')
             }
-        }
+        },
+
     }
 }
 </script>
@@ -65,23 +86,23 @@ export default {
                 <h1>Login</h1>
                 <section id="groupInputs">
                     <aside class="asideLogin">
-                        <input type="text" name="nameLogin" id="nameLogin" @keyup="showStylePassword">
-                        <label for="nameLogin">Nome</label>
+                        <input v-model="dataLogin.email" type="text" name="nameLogin" id="nameLogin" @keyup="showStylePassword">
+                        <label for="nameLogin">Email</label>
                     </aside>
                     
                     <aside class="asideLogin">
-                        <input type="password" name="passwordLogin" id="passwordLogin" class="inputPassword" @keyup="showStylePassword">
+                        <input v-model="dataLogin.password" type="password" name="passwordLogin" id="passwordLogin" class="inputPassword" @keyup="showStylePassword">
                         <label for="passwordLogin">Senha</label>
                         <button id="viewPassword" @click="toggleViewPassword">
                             <ion-icon name="eye-off-outline"></ion-icon>
                         </button>
                     </aside>
 
-                    <p>Esqueceu a senha?</p>
+                    <p id="textForgotPassword">Esqueceu a senha?</p>
                 </section>
 
                 <aside class="asideLogin">
-                    <button>Entrar</button>
+                    <button id="btn_submit">Entrar</button>
                 </aside>
             </form>
         </div>
@@ -216,5 +237,29 @@ input.active_ShowPassword + label{
 }
 #viewPassword > ion-icon {
     font-size: 1.5rem;
+}
+
+#textForgotPassword {
+    text-align: end;
+    cursor: pointer;
+}
+
+#btn_submit {
+    width: 50%;
+    padding: 5px;
+    border-radius: 5px;
+    background-color: #868686;
+    color: var(--color--text);
+    border: none;
+    margin: 0 auto;
+    transition: all 0.4s;
+    cursor: pointer;
+}
+#btn_submit:hover {
+    scale: 1.1;
+}
+
+@media(max-width: 1000px) {
+    
 }
 </style>
