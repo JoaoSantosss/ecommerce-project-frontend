@@ -139,7 +139,7 @@ export default {
             });
             // return
 
-            // this.GetDataRegisterCommon()
+            this.GetDataRegisterCommon()
         },
         addToRefs(el) {
             if(el) {
