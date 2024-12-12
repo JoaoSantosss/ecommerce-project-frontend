@@ -22,7 +22,7 @@ body {
     --color--text: #ffffff;
     --background--strong: #171717;
     --background--input: #2C2C2C;
-    
+    --background--strong--hover: #1d1d1d;
 }
 
 .Theme_Light {
@@ -31,5 +31,11 @@ body {
     --background--input: #d6d6d6;
 }
 
+
+@media(max-width: 800px) {
+    .container_main_center {
+        width: 95%;
+    }
+}
 
 

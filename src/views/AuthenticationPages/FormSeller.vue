@@ -1,12 +1,33 @@
 <script>
 import ButtonToggleForm from './ButtonToggleForm.vue'
+import Modal from './Modal.vue';
 
 export default {
     name: 'FormSeller',
-    components: { ButtonToggleForm },
+    components: { ButtonToggleForm, Modal },
+    props: {
+        isValidCPF: { type: Function, Required: true },
+        isValidCNPJ: { type: Function, Required: true },
+        isEmailValue: { type:Function, Required: true },
+        applyCpfMask: { type: Function, Required: true },
+        applyCnpjMask: { type: Function, Required: true },
+        BackHome: { type: Function, Required: true },
+    },
     data() {
         return {
+            endpoint: 'http://localhost:8080/',
             UserDateSeller: {
+                name: '',
+                surname: '',
+                cpf: '',
+                cnpj: '',
+                legalName: '',
+                email: '',
+                confEmail: '',
+                password: ''
+
+            },
+            TratUserDateSeller: {
                 email: "",
                 password: "",
                 name: "",
@@ -14,11 +35,18 @@ export default {
                 legalName: "",
                 cpf: ""
             },
-            Mensagem_de_erro_personalizada: 'O campo tem que ter no mínimo 3 caracteres!',
-            Mensagem_de_erro_personalizada_Cpf: 'O campo deve ter no mínimo 3 caractres!',
-            Mensagem_de_erro_personalizada_Cnpj: 'O campo deve ter no mínimo 3 caractres!',
+            mensageCustom_error: 'O campo tem que ter no mínimo 3 caracteres!',
+            mensageCustom_error_Cpf: 'CPF inválido!',
+            mensageCustom_error_Cnpj: 'CNPJ inválido!',
+            mensageCustom_error_email: 'Formato de email inválido!',
+            mensageCustom_error_confEmail: 'Este e-mail difere do anterior!',
+            mensageCustom_error_password: 'No mínimo 8 caracteres!',
             mensage_BtnRegister: 'Cadastre-se',
-            containerInputs: []
+            fullName: '',
+            showModal: false,
+            mensageModal: '',
+            show_accessSystem: false,
+            textContentBtn: 'Logar',
         }
     },
     methods: {
@@ -28,12 +56,23 @@ export default {
             let asides = input.parentNode;
             let container = asides.querySelector('.container_ShowError');
 
+            this.fullName = `${this.UserDateSeller.name}`
+            this.fullName += ` ${this.UserDateSeller.surname}`
+
+            this.TratUserDateSeller = {
+                email: this.UserDateSeller.email,
+                password: this.UserDateSeller.password,
+                name: this.UserDateSeller.name,
+                cnpj: this.UserDateSeller.cnpj,
+                legalName: this.UserDateSeller.legalName,
+                cpf: this.UserDateSeller.cpf 
+            }
+
             if (input.value.trim() !== '') {
                 input.classList.add('maintain_effect');
             } else {
                 input.classList.remove('maintain_effect');
             }
-
             if(input.value.length < 3) {
                 input.classList.add('inputError');
                 container.style.display = 'flex';
@@ -42,253 +81,179 @@ export default {
                 input.classList.remove('inputError');
                 container.style.display = 'none';
             }
-
             if (input.id === 'cpfSeller') {
-                // Adiciona máscara ao CPF
                 input.value = this.applyCpfMask(input.value);
-
-                const cpf = input.value.replace(/[^\d]+/g, ""); // Remove caracteres não numéricos
-
-                if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) {
-                    console.error("CPF inválido: estrutura incorreta ou números repetidos.");
-                    input.classList.add('inputError');
-                    container.style.display = 'flex';
-                    this.Mensagem_de_erro_personalizada_Cpf = 'CPF inválido: estrutura incorreta ou números repetidos.'
-                    return;
-                }
-
-                let soma = 0;
-
-                // Verificar primeiro dígito
-                for (let i = 0; i < 9; i++) {
-                    soma += parseInt(cpf.charAt(i)) * (10 - i);
-                }
-
-                let resto = (soma * 10) % 11;
-                if (resto === 10 || resto === 11) resto = 0;
-
-                if (resto !== parseInt(cpf.charAt(9))) {
-                    console.error("CPF inválido: primeiro dígito verificador está incorreto.");
-                    input.classList.add('inputError');
-                    container.style.display = 'flex';
-                    this.Mensagem_de_erro_personalizada_Cpf = 'CPF inválido: primeiro dígito verificador está incorreto.'
-                    return;
-                }
-
-                soma = 0;
-
-                // Verificar segundo dígito
-                for (let i = 0; i < 10; i++) {
-                soma += parseInt(cpf.charAt(i)) * (11 - i);
-                }
-
-                resto = (soma * 10) % 11;
-                if (resto === 10 || resto === 11) resto = 0;
-
-                if (resto !== parseInt(cpf.charAt(10))) {
-                    console.error("CPF inválido: segundo dígito verificador está incorreto.");
-                    input.classList.add('inputError');
-                    container.style.display = 'flex';
-                    this.Mensagem_de_erro_personalizada_Cpf = 'CPF inválido: segundo dígito verificador está incorreto.'
-                    return;
-                }
-
-                console.log("CPF válido!");
             }
-
             if (input.id === 'cnpjSeller') {
-                // Adiciona máscara ao CNPJ
                 input.value = this.applyCnpjMask(input.value);
+            }  
+        },
 
-                const cnpj = input.value.replace(/[^\d]+/g, ""); // Remove caracteres não numéricos
+        async GetDataRegisterSeller() {
+            try {
+                const response = await fetch(`${this.endpoint}user/seller`, {
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(this.TratUserDateSeller)
+                })
 
-                // Verifica se o CNPJ tem 14 dígitos e não é composto por números repetidos
-                if (cnpj.length !== 14 || /^(\d)\1+$/.test(cnpj)) {
-                    console.error("CNPJ inválido: estrutura incorreta ou números repetidos.");
-                    input.classList.add('inputError');
-                    container.style.display = 'flex';
-                    this.Mensagem_de_erro_personalizada_Cnpj = 'CNPJ inválido: estrutura incorreta ou números repetidos.'
-                    return;
+                if (!response.ok) {
+                    this.showModal = true
+                    this.mensageModal = 'Erro ao cadastrar usuário'
+                    this.show_accessSystem = false
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
-                let tamanho = cnpj.length - 2;
-                let numeros = cnpj.substring(0, tamanho);
-                let digitos = cnpj.substring(tamanho);
-                let soma = 0;
-                let pos = tamanho - 7;
+                const data = await response.json()
+                console.log('essa é a data:', data)
 
-                // Verificar o primeiro dígito
-                for (let i = tamanho; i >= 1; i--) {
-                    soma += numeros.charAt(tamanho - i) * pos--;
-                    if (pos < 2) pos = 9;
-                }
+                this.showModal = true
+                this.show_accessSystem = true
+                this.mensageModal = 'Usuário cadastrado com sucesso!'
 
-                let resultado = soma % 11 < 2 ? 0 : 11 - (soma % 11);
-                    if (resultado !== parseInt(digitos.charAt(0))) {
-                    console.error("CNPJ inválido: primeiro dígito verificador está incorreto.");
-                    input.classList.add('inputError');
-                    container.style.display = 'flex';
-                    this.Mensagem_de_erro_personalizada_Cnpj = 'CNPJ inválido: primeiro dígito verificador está incorreto.'
-                    return;
-                }
-
-                tamanho += 1;
-                numeros = cnpj.substring(0, tamanho);
-                soma = 0;
-                pos = tamanho - 7;
-
-                // Verificar o segundo dígito
-                for (let i = tamanho; i >= 1; i--) {
-                    soma += numeros.charAt(tamanho - i) * pos--;
-                    if (pos < 2) pos = 9;
-                }
-
-                resultado = soma % 11 < 2 ? 0 : 11 - (soma % 11);
-                if (resultado !== parseInt(digitos.charAt(1))) {
-                    console.error("CNPJ inválido: segundo dígito verificador está incorreto.");
-                    input.classList.add('inputError');
-                    container.style.display = 'flex';
-                    this.Mensagem_de_erro_personalizada_Cnpj = 'CNPJ inválido: segundo dígito verificador está incorreto.'
-                    return;
-                }
-
-                console.log("CNPJ válido!");
+            } catch (error) {
+                console.log("Infelizmente deu merda", error)
             }
-
-            
         },
-        applyCpfMask(value) {
-            value = value.replace(/[^\d]/g, "");
-
-            return value
-                .replace(/^(\d{3})(\d)/, "$1.$2")
-                .replace(/^(\d{3})\.(\d{3})(\d)/, "$1.$2.$3")
-                .replace(/^(\d{3})\.(\d{3})\.(\d{3})(\d)/, "$1.$2.$3-$4");
-        },
-
-        applyCnpjMask(value) {
-            value = value.replace(/[^\d]/g, "");
-
-            return value
-                .replace(/^(\d{2})(\d)/, "$1.$2")
-                .replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3")
-                .replace(/^(\d{2})\.(\d{3})\.(\d{3})(\d)/, "$1.$2.$3/$4")
-                .replace(/^(\d{2})\.(\d{3})\.(\d{3})\/(\d{4})(\d)/, "$1.$2.$3/$4-$5");
-            },
+        
         stopSubmit(event) {
+            this.num++
             event.preventDefault()
 
-             this.containerInputs.forEach(soloInput => {
-                if(soloInput.value.length < 3) {
-                    soloInput.classList.add('inputError')
-                    soloInput.focus()
-                    let asides = soloInput.parentNode;
-                    let container = asides.querySelector('.container_ShowError');
-                    container.style.display = 'flex'
+            const inputName = this.$refs.nameSeller;
+            const inputSurname = this.$refs.surnameSeller;
+            const inputcpf = this.$refs.cpfSeller;
+            const inputcnpj = this.$refs.cnpjSeller;
+            const inputlegalName = this.$refs.legalName;
+            const inputEmail = this.$refs.emailSeller;
+            const inputConfEmail = this.$refs.Conf_emailSeller;
+            const inputPassowrd = this.$refs.passwordSeller;
 
-                    return
-                }
-            });
+            if(inputName.value.length < 3) return this.generateError(inputName);
+            if(inputSurname.value.length < 3) return this.generateError(inputSurname);
+            if(!this.isValidCPF(inputcpf.value)) return this.generateError(inputcpf);
+            if(!this.isValidCNPJ(inputcnpj.value)) return this.generateError(inputcnpj);
+            if(inputlegalName.value.length < 3) return this.generateError(inputlegalName);
+            if(!this.isEmailValue(inputEmail.value)) return this.generateError(inputEmail);
+            if(inputConfEmail.value !== inputEmail.value) return this.generateError(inputConfEmail);
+            if(inputPassowrd.value.length < 8) return this.generateError(inputPassowrd);
+
+
+            this.GetDataRegisterSeller()
+            
         },
-        addToRefs(el) {
-            if(el) {
-                this.containerInputs.push(el)
-            }
+        generateError(input) {
+            let aside = input.parentNode
+            let container = aside.querySelector('.container_ShowError')
+            input.classList.add('inputError');
+            input.focus();
+            container.style.display = 'flex'
+
+        },
+        accessSystem() {
+            this.showModal = false
+            setTimeout(()=> {
+                this.BackHome('Login', 'PageLogin')
+            }, 1500)  
+        },
+        closeModal() {
+            this.showModal = false
+            window.location.reload();
         }
+
     },
 }
 </script>
 
 <template>
+    <Modal v-if="showModal"
+    @accessSystem="accessSystem"
+    @closeModal="closeModal"
+    :mensageModal="mensageModal"
+    :show_accessSystem="show_accessSystem"
+    :textContentBtn="textContentBtn"
+    />
     <div id="containerFormCommon">
         <form @submit="stopSubmit">
-            <!-- <section v-for="itemsSections in dataCreateFormSeller" :key="itemsSections" class="sectionsForm">
-                <aside v-for="itemsInputs_Form in itemsSections" :key="itemsInputs_Form.id" :class="itemsInputs_Form.classAside">
-                    <input v-model="UserDateSeller[itemsInputs_Form.modelKey]" :type="itemsInputs_Form.typeInput" :name="itemsInputs_Form.forName" :id="itemsInputs_Form.forName" @keyup="showStyleInputs">
-                    <label :for="itemsInputs_Form.forName">{{ itemsInputs_Form.forName }}</label>
-                    <div class="container_ShowError">
-                        <ion-icon name="alert-circle-outline"></ion-icon>
-                        <p>{{ Mensagem_de_erro_personalizada }}</p>
-                    </div>
-                </aside>
-            </section> -->
 
             <section class="sectionsForm">
                 <aside class="asidesForms">
-                    <input type="text" id="nameSeller" name="nameSeller" :ref="addToRefs" @keyup="showStyleInputs">
+                    <input v-model="UserDateSeller.name" type="text" id="nameSeller" name="nameSeller" ref="nameSeller" @keyup="showStyleInputs">
                     <label for="nameSeller">Nome</label>
                     <div class="container_ShowError">
                         <ion-icon name="alert-circle-outline"></ion-icon>
-                        <p>{{ Mensagem_de_erro_personalizada }}</p>
+                        <p>{{ mensageCustom_error }}</p>
                     </div>
                 </aside>
                 <aside class="asidesForms">
-                    <input type="text" id="surnameSeller" name="surnameSeller" :ref="addToRefs" @keyup="showStyleInputs">
+                    <input v-model="UserDateSeller.surname" type="text" id="surnameSeller" name="surnameSeller" ref="surnameSeller" @keyup="showStyleInputs">
                     <label for="surnameSeller">Sobrenome</label>
                     <div class="container_ShowError">
                         <ion-icon name="alert-circle-outline"></ion-icon>
-                        <p>{{ Mensagem_de_erro_personalizada }}</p>
+                        <p>{{ mensageCustom_error }}</p>
                     </div>
                 </aside>
             </section>
 
             <section class="sectionsForm">
                 <aside class="asidesForms">
-                    <input type="text" id="cpfSeller" name="cpfSeller" :ref="addToRefs" @keyup="showStyleInputs" maxlength="14">
+                    <input v-model="UserDateSeller.cpf" type="text" id="cpfSeller" name="cpfSeller" ref="cpfSeller" @keyup="showStyleInputs" maxlength="14">
                     <label for="cpfSeller">CPF</label>
                     <div class="container_ShowError">
                         <ion-icon name="alert-circle-outline"></ion-icon>
-                        <p>{{ Mensagem_de_erro_personalizada_Cpf }}</p>
+                        <p>{{ mensageCustom_error_Cpf }}</p>
                     </div>
                 </aside>
                 <aside class="asidesForms">
-                    <input type="text" id="cnpjSeller" name="cnpjSeller" :ref="addToRefs" @keyup="showStyleInputs" maxlength="18">
+                    <input v-model="UserDateSeller.cnpj" type="text" id="cnpjSeller" name="cnpjSeller" ref="cnpjSeller" @keyup="showStyleInputs" maxlength="18">
                     <label for="cnpjSeller">CNPJ</label>
                     <div class="container_ShowError">
                         <ion-icon name="alert-circle-outline"></ion-icon>
-                        <p>{{ Mensagem_de_erro_personalizada_Cnpj }}</p>
+                        <p>{{ mensageCustom_error_Cnpj }}</p>
                     </div>
                 </aside>
             </section>
 
             <section class="sectionsForm">
                 <aside class="asidesFormsFull">
-                    <input type="text" id="legalName" name="legalName" :ref="addToRefs" @keyup="showStyleInputs">
+                    <input v-model="UserDateSeller.legalName" type="text" id="legalName" name="legalName" ref="legalName" @keyup="showStyleInputs">
                     <label for="legalName">Nome Legal</label>
                     <div class="container_ShowError">
                         <ion-icon name="alert-circle-outline"></ion-icon>
-                        <p>{{ Mensagem_de_erro_personalizada }}</p>
+                        <p>{{ mensageCustom_error }}</p>
                     </div>
                 </aside>
             </section>
 
             <section class="sectionsForm">
                 <aside class="asidesForms">
-                    <input type="text" id="emailSeller" name="emailSeller" :ref="addToRefs" @keyup="showStyleInputs">
+                    <input v-model="UserDateSeller.email" type="text" id="emailSeller" name="emailSeller" ref="emailSeller" @keyup="showStyleInputs">
                     <label for="emailSeller">Email</label>
                     <div class="container_ShowError">
                         <ion-icon name="alert-circle-outline"></ion-icon>
-                        <p>{{ Mensagem_de_erro_personalizada }}</p>
+                        <p>{{ mensageCustom_error_email }}</p>
                     </div>
                 </aside>
 
                 <aside class="asidesForms">
-                    <input type="text" id="Conf_emailSeller" name="Conf_emailSeller" :ref="addToRefs" @keyup="showStyleInputs">
+                    <input v-model="UserDateSeller.confEmail" type="text" id="Conf_emailSeller" name="Conf_emailSeller" ref="Conf_emailSeller" @keyup="showStyleInputs">
                     <label for="Conf_emailSeller">Confirme seu email</label>
                     <div class="container_ShowError">
                         <ion-icon name="alert-circle-outline"></ion-icon>
-                        <p>{{ Mensagem_de_erro_personalizada }}</p>
+                        <p>{{ mensageCustom_error_confEmail }}</p>
                     </div>
                 </aside>
             </section>
 
             <section class="sectionsForm" id="sectionBtn">
                 <aside class="asidesForms">
-                    <input type="text" id="passwordSeller" name="passwordSeller" :ref="addToRefs" @keyup="showStyleInputs">
+                    <input v-model="UserDateSeller.password" type="password" id="passwordSeller" name="passwordSeller" ref="passwordSeller" @keyup="showStyleInputs">
                     <label for="passwordSeller">Senha</label>
                     <div class="container_ShowError">
                         <ion-icon name="alert-circle-outline"></ion-icon>
-                        <p>{{ Mensagem_de_erro_personalizada }}</p>
+                        <p>{{ mensageCustom_error_password }}</p>
                     </div>
                 </aside>
                 <aside class="asidesForms" id="asideBtn">
@@ -337,7 +302,7 @@ export default {
     gap: 10px;
 }
 .inputError {
-    border-bottom: 3px solid rgb(142, 0, 0) !important;
+    border-bottom: 3px solid rgb(255, 0, 0) !important;
 }
 label {
     transform: translateY(-45px);
@@ -370,7 +335,7 @@ input.maintain_effect + label {
     display: none; /*aa flex*/
     align-items: center;
     gap: 5px;
-    color: rgb(142, 0, 0);
+    color: rgb(255, 0, 0);
     font-weight: bold;
     transform: translateY(-300%);
     font-size: 0.7rem;

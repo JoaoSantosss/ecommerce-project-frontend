@@ -1,6 +1,8 @@
 <script>
+import Modal from './Modal.vue';
 export default {
     name: 'Login',
+    components: { Modal },
     data() {
         return {
             endpoint: 'http://localhost:8080',
@@ -8,6 +10,12 @@ export default {
                 email: '',
                 password: ''
             },
+            showModal: false,
+            mensageCustom_error: 'Email inválido!',
+            mensageCustom_errorPassword: 'A senha deve ter no mínimo 3 caracteres',
+            mensageModal: 'Login realizado com sucesso!',
+            show_accessSystem: false,
+            textContentBtn: 'Entrar no sistema'
         }
     },
     methods: {
@@ -21,21 +29,44 @@ export default {
                     body: JSON.stringify(this.dataLogin)
                 })
 
+                console.log('esse é o status', response.status)
+                if(response.status === 403) {
+                    this.showModal = true
+                    this.mensageModal = 'Usuário ou senha invalidos!'
+                    return
+                }
+
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    throw new Error(`HTTP error! status: ${response.status}`); 
                 }
 
                 const data = await response.json()
 
                 console.log('essa é a data:', data)
 
+                localStorage.setItem("token", data.token);
+                this.showModal = true
+                this.mensageModal = 'Login realizado com sucesso!'
+                this.show_accessSystem = true
+
             } catch (error) {
                 console.log('Não foi possivel fazer o login \n',  error)
+                alert('o servidor foi pra poha')
             }
         },
         stopForm(Event) {
             Event.preventDefault();
+
+
+            const nameLogin = this.$refs.nameLogin;
+            const passwordLogin = this.$refs.passwordLogin;
+
+            if(!this.isEmailValue(nameLogin.value)) return this.generateError(nameLogin);
+            if(passwordLogin.value.length < 8) return this.generateError(passwordLogin)
+
             this.GetDataLogin()
+
+            //está faltando a configuração do modal 
         },
         BackHome(home, nameRouter) {
             this.$router.push({ name: nameRouter, params: { home } });
@@ -65,12 +96,41 @@ export default {
                 ElementShoot_event.setAttribute('name', 'eye-off-outline')
             }
         },
+        generateError(input) {
+            let aside = input.parentNode
+            let container = aside.querySelector('.container_ShowError')
+            input.classList.add('inputError');
+            input.focus();
+            container.style.display = 'flex'
+        },
+        isEmailValue(email) {
+            const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]{2,}$/;
+
+            return emailRegex.test(email);
+        },
+        accessSystem() {
+            this.showModal = false
+            setTimeout(()=> {
+                this.BackHome('Home', 'home')
+            }, 2000)  
+        },
+        closeModal() {
+            this.showModal = false
+            window.location.reload();
+        }
 
     }
 }
 </script>
 
 <template>
+    <Modal v-if="showModal" 
+    @accessSystem="accessSystem"
+    @closeModal="closeModal"
+    :mensageModal="mensageModal"
+    :show_accessSystem="show_accessSystem"
+    :textContentBtn="textContentBtn"
+    />
     <div id="containerLogin">
         <div id="container_itensTop">
             <div id="containerLogoAplication">
@@ -86,16 +146,24 @@ export default {
                 <h1>Login</h1>
                 <section id="groupInputs">
                     <aside class="asideLogin">
-                        <input v-model="dataLogin.email" type="text" name="nameLogin" id="nameLogin" @keyup="showStylePassword">
+                        <input v-model="dataLogin.email" type="text" name="nameLogin" id="nameLogin" ref="nameLogin" @keyup="showStylePassword">
                         <label for="nameLogin">Email</label>
+                        <div class="container_ShowError">
+                            <ion-icon name="alert-circle-outline"></ion-icon>
+                            <p>{{ mensageCustom_error }}</p>
+                        </div>
                     </aside>
                     
                     <aside class="asideLogin">
-                        <input v-model="dataLogin.password" type="password" name="passwordLogin" id="passwordLogin" class="inputPassword" @keyup="showStylePassword">
+                        <input v-model="dataLogin.password" type="password" name="passwordLogin" id="passwordLogin" ref="passwordLogin" class="inputPassword" @keyup="showStylePassword">
                         <label for="passwordLogin">Senha</label>
-                        <button id="viewPassword" @click="toggleViewPassword">
+                        <div id="viewPassword" @click="toggleViewPassword">
                             <ion-icon name="eye-off-outline"></ion-icon>
-                        </button>
+                        </div>
+                        <div class="container_ShowError">
+                            <ion-icon name="alert-circle-outline"></ion-icon>
+                            <p>{{ mensageCustom_errorPassword }}</p>
+                        </div>
                     </aside>
 
                     <p id="textForgotPassword">Esqueceu a senha?</p>
@@ -195,7 +263,9 @@ h1 {
     display: flex;
     flex-direction: column;
 }
-
+.inputError {
+    border-bottom: 3px solid rgb(255, 0, 0) !important;
+}
 label {
     font-size: 1.5rem;
     transform: translateY(-35px);
@@ -226,6 +296,16 @@ input.active_ShowPassword + label{
 
 .inputPassword {
     position: relative;
+}
+
+.container_ShowError {
+    display: none; /*aa flex*/
+    align-items: center;
+    gap: 5px;
+    color: rgb(255, 0, 0);
+    font-weight: bold;
+    transform: translateY(-150%);
+    font-size: 0.7rem;
 }
 #viewPassword {
     position: absolute;

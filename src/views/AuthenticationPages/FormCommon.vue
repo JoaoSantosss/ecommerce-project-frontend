@@ -1,10 +1,17 @@
 <script>
 import ButtonToggleForm from './ButtonToggleForm.vue';
-
+import Modal from './Modal.vue';
 
 export default {
     name: 'FormCommon',
-    components: { ButtonToggleForm },
+    components: { ButtonToggleForm, Modal },
+    props: {
+        isValidCPF: { type: Function, Required: true },
+        isEmailValue:{ type: Function, Required: true },
+        applyCpfMask: { type: Function, Required: true },
+        BackHome: { type: Function, Required: true },
+        closeModal: { type: Function, Required: true }
+    },
     data() {
         return {
             endpoint: 'http://localhost:8080/',
@@ -12,9 +19,8 @@ export default {
                 name: '',
                 surname: '',
                 cpf: '',
-                type: '',
                 email: '',
-                confirmEmail: '',
+                confEmail: '',
                 password: ''
             },
             TratUserDataCommon: {
@@ -23,81 +29,58 @@ export default {
                 name: "",
                 cpf: ""
             },
-            fullName: '',
-            dataCreateFormCommon: [
-                [
-                    { id: 1, forName: 'Nome', typeInput: 'text', modelKey: 'name', className: 'inputs' },
-                    { id: 2, forName: 'Sobrenome', typeInput: 'text', modelKey: 'surname', className: 'inputs' }
-                ],
-                [
-                    { id: 3, forName: 'Cpf', typeInput: 'text', modelKey: 'cpf', className: 'inputs' },
-                    { id: 4, forName: 'Tipo', typeInput: 'text', modelKey: 'type', className: 'inputs' }
-                ],
-                [
-                    { id: 5, forName: 'Email', typeInput: 'text', modelKey: 'email', className: 'inputs' },
-                    { id: 6, forName: 'Confirme seu email', typeInput: 'text', modelKey: 'confirmEmail', className: 'inputs' }
-                ],
-                [
-                    { id: 7, forName: 'Senha', typeInput: 'password', modelKey: 'password', className: 'inputs' }
-                ]
-            ],
-            Mensagem_de_erro_personalizada: 'teste de erro',
+            mensageCustom_error: 'O campo tem que ter no mínimo 3 caracteres!',
+            mensageCustom_error_Cpf: 'CPF inválido!',
+            mensageCustom_error_email: 'Formato de email inválido!',
+            mensageCustom_error_confEmail: 'Este e-mail difere do anterior!',
+            mensageCustom_error_password: 'No mínimo 8 caracteres!',
             mensage_BtnRegister: 'Cadastre-se',
-            inputsRefs: []
+            fullname: '',
+            showModal: false,
+            mensageModal: '',
+            show_accessSystem: false,
+            textContentBtn: 'Logar'
         }
     },
     methods: {
-        mascaraCpf(event) {
-            let input = event.target;
-            if(input.id === 'Cpf') {
-                let cpfValue = input.value
-                input.setAttribute('maxlength', '14')
-
-                // Remove caracteres que não sejam números
-                cpfValue = cpfValue.replace(/\D/g, '');
-
-                // Adiciona a máscara (###.###.###-##)
-                cpfValue = cpfValue.replace(/(\d{3})(\d)/, '$1.$2');
-                cpfValue = cpfValue.replace(/(\d{3})(\d)/, '$1.$2');
-                cpfValue = cpfValue.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
-
-                // Atualiza o campo com o valor formatado
-                event.target.value = cpfValue;
-            }
-            
-        },
         
         showStyleInputs(event) {
             const input = event.target;
+            let asides = input.parentNode;
+            let container = asides.querySelector('.container_ShowError');
 
-            this.inputsRefs.forEach(soloInput => {
- 
-                if(soloInput.value.length < 3) {
-                    soloInput.classList.add('inputError')
-                } else {
-                    soloInput.classList.remove('inputError')
-                }
-            });
+            this.fullname = `${this.UserDataCommon.name}`
+            this.fullname += ` ${this.UserDataCommon.surname}`
 
-            this.fullName = this.UserDataCommon.name
-            this.fullName += this.UserDataCommon.surname
-
-            // Limpa os dados de TratUserDataCommon para garantir que a cópia seja feita de forma limpa
             this.TratUserDataCommon = {
                 email: this.UserDataCommon.email,
                 password: this.UserDataCommon.password,
-                name: this.fullName,
+                name: this.fullname,
                 cpf: this.UserDataCommon.cpf
-            };
+            }
 
-            console.log(JSON.stringify(this.TratUserDataCommon)); // Para verificar os dados copiados
+            console.log(this.TratUserDataCommon)
 
-            // Verifica se o campo foi preenchido e adiciona a classe de estilo
             if (input.value.trim() !== '') {
                 input.classList.add('maintain_effect');
             } else {
                 input.classList.remove('maintain_effect');
             }
+
+            if(input.value.length < 3) {
+                input.classList.add('inputError');
+                container.style.display = 'flex';
+                this.mensageCustom_error = 'O campo deve ter no mínimo 3 caractres!';
+            } else {
+                input.classList.remove('inputError');
+                container.style.display = 'none';
+            }
+
+            if (input.id === 'cpfCommon') {
+                // Adiciona máscara ao CPF
+                input.value = this.applyCpfMask(input.value);
+            }
+
         },
 
         async GetDataRegisterCommon() {
@@ -111,71 +94,141 @@ export default {
                 })
 
                 if (!response.ok) {
+                    this.showModal = true
+                    this.mensageModal = 'Erro ao cadastrar usuário'
+                    this.show_accessSystem = false
                     throw new Error(`HTTP error! status: ${response.status}`);
-                }
+                } 
 
                 const data = await response.json()
                 console.log('essa é a data:', data)
+
+                this.showModal = true
+                this.show_accessSystem = true
+                this.mensageModal = 'Usuário cadastrado com sucesso!'
 
             } catch (error) {
                 console.log('Infelizmente deu merda', error)
             }
         },
+        genereteError(input) {
+            input.classList.add('inputError')
+            input.focus()
+        },
         stopSubmit(event) {
             event.preventDefault();
-
             // const form = event.target
-            // const teste = form.querySelector('.container_ShowError')
+            const inputName = this.$refs.nameCommon
+            const inputSurname = this.$refs.surnameCommon
+            const inputcpf = this.$refs.cpfCommon
+            const inputEmail = this.$refs.emailCommon
+            const inputConfEmail = this.$refs.Conf_emailCommon
+            const inputPassowrd = this.$refs.passwordCommon
 
-            // console.log(teste)
 
-            this.inputsRefs.forEach(soloInput => {
- 
-                if(soloInput.value.length < 3) {
-                    soloInput.classList.add('inputError')
-                } else {
-                    soloInput.classList.remove('inputError')
-                }
-            });
-            // return
+            if(inputName.value.length < 3) return this.generateError(inputName);
+            if(inputSurname.value.length < 3) return this.generateError(inputSurname);
+            if(!this.isValidCPF(inputcpf.value)) return this.generateError(inputcpf);
+            if(!this.isEmailValue(inputEmail.value)) return this.generateError(inputEmail);
+            if(inputConfEmail.value !== inputEmail.value) return this.generateError(inputConfEmail);
+            if(inputPassowrd.value.length < 8) return this.generateError(inputPassowrd);
 
-            this.GetDataRegisterCommon()
+            // alert('')
+
+            this.GetDataRegisterCommon(); 
         },
-        addToRefs(el) {
-            if(el) {
-                this.inputsRefs.push(el)
-            }
+        generateError(input) {
+            let aside = input.parentNode
+            let container = aside.querySelector('.container_ShowError')
+            input.classList.add('inputError');
+            input.focus();
+            container.style.display = 'flex'
+        },
+        accessSystem() {
+            this.showModal = false
+            setTimeout(()=> {
+                this.BackHome('Login', 'PageLogin')
+            }, 1500)  
+        },
+        closeModal() {
+            this.showModal = false
+            window.location.reload();
         }
-        
     }
-
-
 }
 </script>
 
 <template>
+    <Modal v-if="showModal" 
+    @accessSystem="accessSystem"
+    @closeModal="closeModal"
+    :mensageModal="mensageModal"
+    :show_accessSystem="show_accessSystem"
+    :textContentBtn="textContentBtn"
+    />
     <div id="containerFormCommon">
         <form @submit="stopSubmit">
-            <section v-for="itemsSections in dataCreateFormCommon" :key="itemsSections" class="sectionsForm">
-                <aside class="asidesForms" v-for="itemsInputs_Form in itemsSections" :key="itemsInputs_Form.id">
 
-                    <input v-model="UserDataCommon[itemsInputs_Form.modelKey]" 
-                    :type="itemsInputs_Form.typeInput" 
-                    :name="itemsInputs_Form.forName" 
-                    :id="itemsInputs_Form.forName" 
-                    @keyup="showStyleInputs" 
-                    @input="mascaraCpf"
-                    :ref="addToRefs">
-
-                    <label :for="itemsInputs_Form.forName">{{ itemsInputs_Form.forName }}</label>
+            <section class="sectionsForm">
+                <aside class="asidesForms">
+                    <input v-model="UserDataCommon.name" type="text" id="nameCommon" name="nameCommon" ref="nameCommon" @keyup="showStyleInputs">
+                    <label for="nameCommon">Nome</label>
                     <div class="container_ShowError">
                         <ion-icon name="alert-circle-outline"></ion-icon>
-                        <p>{{ Mensagem_de_erro_personalizada }}</p>
+                        <p>{{ mensageCustom_error }}</p>
+                    </div>
+                </aside>
+
+                <aside class="asidesForms">
+                    <input v-model="UserDataCommon.surname" type="text" id="surnameCommon" name="surnameCommon" ref="surnameCommon" @keyup="showStyleInputs">
+                    <label for="surnameCommon">Sobrenome</label>
+                    <div class="container_ShowError">
+                        <ion-icon name="alert-circle-outline"></ion-icon>
+                        <p>{{ mensageCustom_error }}</p>
+                    </div>
+                </aside>
+            </section>
+
+            <section class="sectionsForm">
+                <aside class="asidesFormsfull">
+                    <input v-model="UserDataCommon.cpf" type="text" id="cpfCommon" name="cpfCommon" ref="cpfCommon" @keyup="showStyleInputs" maxlength="14">
+                    <label for="cpfCommon">CPF</label>
+                    <div class="container_ShowError">
+                        <ion-icon name="alert-circle-outline"></ion-icon>
+                        <p>{{ mensageCustom_error_Cpf }}</p>
+                    </div>
+                </aside>
+            </section>
+
+            <section class="sectionsForm">
+                <aside class="asidesForms">
+                    <input v-model="UserDataCommon.email" type="text" id="emailCommon" name="emailCommon" ref="emailCommon" @keyup="showStyleInputs">
+                    <label for="emailCommon">Email</label>
+                    <div class="container_ShowError">
+                        <ion-icon name="alert-circle-outline"></ion-icon>
+                        <p>{{ mensageCustom_error_email }}</p>
+                    </div>
+                </aside>
+
+                <aside class="asidesForms">
+                    <input v-model="UserDataCommon.confEmail" type="text" id="Conf_emailCommon" name="Conf_emailCommon" ref="Conf_emailCommon" @keyup="showStyleInputs">
+                    <label for="Conf_emailCommon">Confirme seu email</label>
+                    <div class="container_ShowError">
+                        <ion-icon name="alert-circle-outline"></ion-icon>
+                        <p>{{ mensageCustom_error_confEmail }}</p>
                     </div>
                 </aside>
             </section>
 
             <section class="sectionsForm" id="sectionBtn">
+                <aside class="asidesForms">
+                    <input v-model="UserDataCommon.password" type="password" id="passwordCommon" name="passwordCommon" ref="passwordCommon" @keyup="showStyleInputs">
+                    <label for="passwordCommon">Senha</label>
+                    <div class="container_ShowError">
+                        <ion-icon name="alert-circle-outline"></ion-icon>
+                        <p>{{ mensageCustom_error_password }}</p>
+                    </div>
+                </aside>
                 <aside class="asidesForms" id="asideBtn">
                     <!-- <button id="buttonRegister">Cadastre-se</button> -->
                     <ButtonToggleForm :TextContentBtn="mensage_BtnRegister" :showIcon="false" id="buttonRegister"/>
@@ -219,6 +272,13 @@ form {
     gap: 10px;
     
 }
+
+.asidesFormsfull {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+}
 label {
     transform: translateY(-45px);
     transition: all 0.4s;
@@ -256,16 +316,19 @@ input.maintain_effect + label {
     gap: 5px;
     color: red;
     font-weight: bold;
+    transform: translateY(-300%);
+    font-size: 0.7rem;
 }
 
 
 #sectionBtn {
     display: flex;
-    justify-content: flex-end;
+    /* justify-content: flex-end; */
 }
 #asideBtn {
     display: flex;
     align-items: flex-end;
+    justify-content: center;
 }
 #buttonRegister {
     padding: 10px;
