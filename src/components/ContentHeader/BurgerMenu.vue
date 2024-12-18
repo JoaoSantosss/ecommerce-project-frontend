@@ -69,7 +69,7 @@ export default {
     width: 2vw;
     height: 0.2vw;
     border-radius: 10px;
-    background-color: #ffffff;
+    background-color: var(--color--span) !important;
     transition: 0.5s;
 }
 

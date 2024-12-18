@@ -1,5 +1,5 @@
 <script>
-import Logo from './Logo.vue';
+import Logo from '../SubComponents/Logo.vue';
 export default {
     name: 'ListFull',
     components: { Logo },
@@ -25,7 +25,7 @@ export default {
                             { name_summary_category: 'Quem Somos', srcImgIcon_category: 'attention_icon_white.png' },
                             { name_summary_category: 'Meus Endereços', srcImgIcon_category: 'address_icon_white.png' },
                             { name_summary_category: 'Meus pedidos', srcImgIcon_category: 'orders_icon_white.png' },
-                            { name_summary_category: 'Theme', srcImgIcon_category: 'icon_moon.png' },
+                            { name_summary_category: 'Modo Escuro', srcImgIcon_category: 'icon_moon.png' },
                         ]
                     }
                 ]
@@ -33,14 +33,28 @@ export default {
             summarys: [],
             imgs: [],
             path_ThemeWhite: ['processor_icon_dark.png', 'refrigerator_icon_dark.png', 'books_icon_dark.png', 'icon_shirts_dark.png', 'user_icon_dark.png', 'attention_icon_dark.png', 'address_icon_dark.png', 'orders_icon_dark.png', 'icon_moon.png'],
-            path_ThemeDark: ['processor_icon_white.png', 'refrigerator_icon_white.png', 'books_icon_white.png', 'icon_shirts_white.png', 'user_icon_white.png', 'attention_icon_white.png', 'address_icon_white.png', 'orders_icon_white.png', 'icon_moon.png']
+            path_ThemeDark: ['processor_icon_white.png', 'refrigerator_icon_white.png', 'books_icon_white.png', 'icon_shirts_white.png', 'user_icon_white.png', 'attention_icon_white.png', 'address_icon_white.png', 'orders_icon_white.png', 'icon_moon.png'],
+            body: document.body     
+
+
         }
+    },
+    props: {
+        pass_route: { type: Function, Required: true },
+        valueIconsCategory: { type: HTMLElement, Required: true },
+        // showLogoTheme: { type: Boolean, Required: true }
     },
     mounted() {
         const list_full = this.$refs.list_full;
         this.$emit('showListFull', list_full);
 
-        
+        if(this.valueIconsCategory.classList.contains('theme_Light')) {
+            this.imgs.forEach((img, index) => {
+                // img.setAttribute('src', `/src/assets/image/iconesCategoris/${this.path_ThemeWhite[index]}`);
+                img.src = `/src/assets/image/iconesCategoris/${this.path_ThemeWhite[index]}`
+            });
+        }
+
     },
     methods: {
         effect_arrow(event) {
@@ -72,27 +86,35 @@ export default {
 
             console.log(paragraph.innerText)
 
-            if(paragraph.innerText === 'Theme') {
-                console.log("theme")
+            switch (paragraph.innerText) {
+                case 'Modo Escuro':
+                    console.log("theme")
 
-                paragraph.classList.toggle('teste')
+                    this.$emit('passEvent_toggleTheme');
 
-                //nesse if para verificar se tem a class tem que ser uma logica pra saber se tem uma class no localstorage
+                    if(this.valueIconsCategory.classList.contains('theme_Light')) {
+                        this.imgs.forEach((img, index) => {
+                            img.src = `/src/assets/image/iconesCategoris/${this.path_ThemeWhite[index]}`
+                        });
+                    } else {
+                        this.imgs.forEach((img, index) => {
+                            img.src = `/src/assets/image/iconesCategoris/${this.path_ThemeDark[index]}`
+                        });
+                    }
 
-                if(paragraph.classList.contains("teste")) {
-                    this.imgs.forEach((img, index) => {
-                        img.setAttribute('src', `/src/assets/image/iconesCategoris/${this.path_ThemeWhite[index]}`)
-                    });
-                } else {
-                    this.imgs.forEach((img, index) => {
-                        img.setAttribute('src', `/src/assets/image/iconesCategoris/${this.path_ThemeDark[index]}`)
-                    });
-                }
+                    break;
+
+                case 'Minha Conta':
+                    this.pass_route('config_conta', 'AccountInformation');
+                    this.body.style.overflowY = 'scroll';
+            
+                default:
+                    break;
             }
         },
-        teste(el) {
-            this.imgs.push(el)
-        }
+        push_imgs(el) {
+            this.imgs.push(el);
+        },
     }
 }
 </script>
@@ -118,7 +140,7 @@ export default {
                             <details>
                                 <summary class="summaryName_category" @click="eventClick_category">
                                     <div class="box_imgIconCategory">
-                                        <img :src="`/src/assets/image/iconesCategoris/${arrayDatacategory.srcImgIcon_category}`" alt="icons" :ref="teste">
+                                        <img :src="`/src/assets/image/iconesCategoris/${arrayDatacategory.srcImgIcon_category}`" alt="icons" :ref="push_imgs">
                                     </div>
                                     <p class="summary_category">{{ arrayDatacategory.name_summary_category }}</p>
                                 </summary>
@@ -135,7 +157,7 @@ export default {
         </div>
 
         <div id="button_logout">
-            <button @click="logout">sair</button>
+            <button @click="logout">Sair</button>
         </div>
     </div>
 </template>
@@ -179,7 +201,7 @@ export default {
     position: fixed;
     display: flex;
     justify-content: flex-end;
-    background-color: black;
+    background-color: var(--background--colorFull);
     /* justify-content: flex-start; */
     padding-right: 10px;
     z-index: 1000;
@@ -313,6 +335,27 @@ details summary::marker {
     background: rgba(0, 0, 0, 0);
 }
 
+#button_logout {
+    width: 100%;
+}
+
+#button_logout > button {
+    background-color: #5A61BD;
+    width: 35%;
+    padding: 10px;
+    border: none;
+    border-radius: 50px;
+    color: #ffffff;
+    font-weight: 100;
+    font-size: 1.5vw;
+    margin-bottom: 100px;
+    transition: all 0.4s;
+    cursor: pointer;
+    margin-left: 15px;
+}
+#button_logout > button:hover {
+    scale: 1.1;
+}
 @media(max-width: 1200px) {
     #list_full {
         width: 45%;

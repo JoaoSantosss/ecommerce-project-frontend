@@ -1,19 +1,33 @@
 <script>
 import BurgerMenu from './BurgerMenu.vue'
 import ListFull from './ListFull.vue'
-import Logo from './Logo.vue'
+import Logo from '../SubComponents/Logo.vue'
+import IconUser from '../SubComponents/IconUser.vue'
 import Shadow from './Shadow.vue'
 
 export default {
     name: 'NavBar',
-    components: { BurgerMenu, ListFull, Logo, Shadow },
+    components: { BurgerMenu, ListFull, Logo, IconUser, Shadow },
     data() {
         return {
             ShowListFull: false,
             ShowShadow: false,
-            valueTextInput: ''
+            valueTextInput: '',
+            // pathImgLogo_white: '/src/assets/image/Logo.png',
+            // pathImgLogo_dark: '/src/assets/image/Logo_dark.png',
+            // showLogoTheme: true
         }
     },
+    props: {
+        pass_route: { type: Function, Required: true },
+        valueIconsCategory: { type: HTMLElement, Required: true },
+        // showLogoTheme: { type: Boolean, Required: true }
+    },
+    // mounted() {
+    //     if(this.valueIconsCategory.classList.contains('theme_Light')) {
+    //         this.showLogoTheme = false
+    //     }
+    // },
     methods: {
         openListFull(ListFull) {
             ListFull.classList.add('active');
@@ -28,9 +42,9 @@ export default {
         closeText() {
             this.valueTextInput = ''
         },
-        routerLogin(title, nameRouter) {
-            this.$router.push({ name: nameRouter, params: { title } });
-        }
+        passEvent_toggleTheme() {
+            this.$emit('passEvent_toggleTheme')
+        },
     }
 }
 </script>
@@ -44,15 +58,18 @@ export default {
                     <div id="group_MenuAndLogo">
                         <BurgerMenu @PassValueShowListFull="toggleValueBoolean" @PassValueShowShadow="toggleValueBoolean"/>
                         <div id="containerLogo">
-                            <Logo />
+                            <Logo :ShowLogoTheme="showLogoTheme"/>
                         </div>
                     </div>
 
                     <div id="group_OptionsUserAndCart">
                         <aside id="boxOptionsLoginRegister">
-                            <ion-icon name="person-circle-outline"></ion-icon>
+                            <!-- <ion-icon name="person-circle-outline"></ion-icon> -->
+                             <div id="box_iconUser">
+                                <IconUser />
+                             </div>
                             <p>
-                                Olá, <span @click="routerLogin('Login', 'PageLogin')" class="span_links">Entre</span> ou <br> <span @click="routerLogin('register', 'PageRegister')" class="span_links">Cadastre-se</span>
+                                Olá, <span @click="pass_route('Login', 'PageLogin')" class="span_links">Entre</span> ou <br> <span @click="pass_route('register', 'PageRegister')" class="span_links">Cadastre-se</span>
                             </p>
                         </aside>
 
@@ -81,7 +98,13 @@ export default {
         </div>
 
         <Shadow v-if="ShowShadow"/>
-        <ListFull v-if="ShowListFull" @showListFull="openListFull"/>
+        <ListFull 
+        v-if="ShowListFull" 
+        @showListFull="openListFull"
+        :pass_route="pass_route"
+        @passEvent_toggleTheme="passEvent_toggleTheme"
+        :valueIconsCategory="valueIconsCategory"
+        />
     </nav>
 </template>
 
@@ -90,6 +113,7 @@ nav {
     background: var(--background--strong);
     width: 100%;
     position: fixed;
+    box-shadow: 0 8px 15px rgba(255, 255, 255, 0.2);
 }
 
 #containerContentNavBar {
@@ -102,7 +126,7 @@ nav {
 }
 #containerLogo {
     width: 20vw;
-    /* border: 1px solid red; */
+    /* border: 1px solid rgb(255, 255, 255); */
 }
 #container_inforNavBar {
     width: 100%;
@@ -138,8 +162,13 @@ nav {
     /* border: 2px solid #fff; */
     font-size: 1.3vw;
 }
-#boxOptionsLoginRegister > ion-icon {
+/* #boxOptionsLoginRegister > ion-icon {
     font-size: 2.2vw;
+} */
+
+#box_iconUser {
+    /* border: 2px solid red; */
+    width: 3vw;
 }
 #boxOptionsLoginRegister > p > a {
     color: var(--color--text);

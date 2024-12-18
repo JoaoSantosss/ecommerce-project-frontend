@@ -12,6 +12,11 @@ export default {
 
         }
     },
+    props: {
+        pass_route: { type: Function, Required: true },
+        valueIconsCategory: { type: HTMLElement, Required: true },
+        // showLogoTheme: { type: Boolean, Required: true }
+    },
     mounted() {
         const token = localStorage.getItem('token');
         
@@ -21,24 +26,24 @@ export default {
             console.log(token)
             this.restrita = true
         }
-
     },
-
-
+    methods: {
+        passEvent_toggleTheme() {
+            this.$emit('passEvent_toggleTheme')
+        }
+    }
 }
 </script>
 
 <template>
-    <NavBar :teste="name"/>
+    <NavBar 
+    :pass_route="pass_route"
+    @passEvent_toggleTheme="passEvent_toggleTheme"
+    :valueIconsCategory="valueIconsCategory"
+    />
 
     <header>
-        {{ valueToken }}
 
-
-        <h1 v-if="restrita">configuração restrita</h1>
-
-
-        
     </header>
 </template>
 
@@ -48,5 +53,6 @@ header {
     height: 100vh;
     padding-top: 9rem;
     background-color: rgba(0, 0, 0, 0.717);
+    border: 2px solid red;
 }
 </style>

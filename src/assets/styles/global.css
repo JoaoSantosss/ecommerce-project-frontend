@@ -23,12 +23,30 @@ body {
     --background--strong: #171717;
     --background--input: #2C2C2C;
     --background--strong--hover: #1d1d1d;
+    --background--colorFull: #000000;
+    --color--span: #ffffff;
+
+
+
+
+    --path--logo: url('../../assets/image/Logo.png');
+    --path--iconUser: url('../../assets/image/iconesCategoris/user_icon_white.png')
 }
 
-.Theme_Light {
+.theme_Light {
     --color--text: #ffffff;
     --background--strong: #E8E8E8;
     --background--input: #d6d6d6;
+    --background--colorFull: #ffffff;
+    --color--span: #000000;
+
+
+
+
+
+
+    --path--logo: url('../../assets/image/Logo_dark.png');
+    --path--iconUser: url('../../assets/image/iconesCategoris/user_icon_dark.png')
 }
 
 

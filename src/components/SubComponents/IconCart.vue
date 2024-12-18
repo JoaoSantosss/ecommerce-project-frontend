@@ -1,12 +1,11 @@
 <script>
-
 export default {
-  name: 'TheMain',
+    name: 'IconCart',
 }
 </script>
 
 <template>
-  Main
+
 </template>
 
 <style scoped>
