@@ -11,8 +11,8 @@ Este projeto é uma aplicação de e-commerce online, que oferece vendas em dive
 - Bibliotecas de ícones: Ion Icons
 
 ### Back-end
-- Spring Boot ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)
-- Java ![Java](https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=java&logoColor=white)
+- ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)
+- ![Java](https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=java&logoColor=white)
 
 ## Estrutura do Projeto
 
