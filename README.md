@@ -1,6 +1,6 @@
 # E-commerce Online
 
-Este projeto é uma aplicação de e-commerce online, que oferece vendas em diversas categorias, como Tecnologia, Eletrodomésticos, Moda e Leitura. O sistema é dividido em front-end e back-end, proporcionando uma experiência de compra eficiente e organizada.
+Este projeto é uma aplicação de e-commerce online, que oferece vendas em diversas categorias, como Tecnologia, Eletrodomésticos, Moda e Leitura. proporcionando uma experiência de compra eficiente e organizada.
 
 ## Tecnologias Utilizadas
 
