@@ -27,7 +27,7 @@ Este projeto é uma aplicação de e-commerce online, que oferece vendas em dive
 Este projeto está em desenvolvimento.
 
 ## Desenvolvedores
-- **Front-end**: Carlos
+- **Front-end**: SR Carlos
 - **Back-end**: João Gabriel
 
 ## Design
