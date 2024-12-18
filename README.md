@@ -18,10 +18,6 @@ Este projeto é uma aplicação de e-commerce online, que oferece vendas em dive
 
 ### Funcionalidades
 - Gestão de categorias: Tecnologia, Eletrodomésticos, Moda e Leitura.
-- Cadastro de produtos.
-- Controle de estoque.
-- Carrinho de compras com cálculo automático.
-- Finalização de pedidos.
 
 ### Status do Projeto
 Este projeto está em desenvolvimento.
