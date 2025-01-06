@@ -50,7 +50,7 @@ export default {
 <style scoped>
 header {
     width: 100%;
-    height: 100vh;
+    min-height: 100vh;
     padding-top: 9rem;
     background-color: rgba(0, 0, 0, 0.717);
     border: 2px solid red;

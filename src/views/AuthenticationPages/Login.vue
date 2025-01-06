@@ -146,7 +146,13 @@ export default {
                 <h1>Login</h1>
                 <section id="groupInputs">
                     <aside class="asideLogin">
-                        <input v-model="dataLogin.email" type="text" name="nameLogin" id="nameLogin" ref="nameLogin" @keyup="showStylePassword">
+                        <input v-model="dataLogin.email"
+                         type="text"
+                          name="nameLogin"
+                           id="nameLogin"
+                            ref="nameLogin"
+                             @keyup="showStylePassword"
+                             >
                         <label for="nameLogin">Email</label>
                         <div class="container_ShowError">
                             <ion-icon name="alert-circle-outline"></ion-icon>
@@ -155,7 +161,14 @@ export default {
                     </aside>
                     
                     <aside class="asideLogin">
-                        <input v-model="dataLogin.password" type="password" name="passwordLogin" id="passwordLogin" ref="passwordLogin" class="inputPassword" @keyup="showStylePassword">
+                        <input v-model="dataLogin.password"
+                         type="password"
+                          name="passwordLogin"
+                           id="passwordLogin"
+                            ref="passwordLogin"
+                             class="inputPassword"
+                              @keyup="showStylePassword"
+                              >
                         <label for="passwordLogin">Senha</label>
                         <div id="viewPassword" @click="toggleViewPassword">
                             <ion-icon name="eye-off-outline"></ion-icon>
