@@ -44,7 +44,7 @@ export default {
   },
   computed: {
     showHeaderAndMain() {
-      const hideOnRoutes = ['Home', 'PageLogin', 'PageRegister', 'AccountInformation'];
+      const hideOnRoutes = ['Home', 'PageLogin', 'PageRegister', 'AccountInformation', 'AddressInformation'];
       return !hideOnRoutes.includes(this.$route.name);
     }
   }

@@ -32,6 +32,7 @@ body {
     --path--logo: url('../../assets/image/Logo.png');
     --path--iconUser: url('../../assets/image/iconesCategoris/user_icon_white.png');
     --path--img--footer: url('../../assets/image/backgrondFooterDark.jpg');
+    --path--iconLocation: url('../../assets/image/iconesCategoris/address_icon_white.png');
 }
 
 .theme_Light {
@@ -49,6 +50,7 @@ body {
     --path--logo: url('../../assets/image/Logo_dark.png');
     --path--iconUser: url('../../assets/image/iconesCategoris/user_icon_dark.png');
     --path--img--footer: url('../../assets/image/backgrondFooterWhite.jpg');
+    --path--iconLocation: url('../../assets/image/iconesCategoris/address_icon_dark.png');
 }
 
 

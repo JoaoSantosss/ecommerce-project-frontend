@@ -13,6 +13,7 @@ export default {
             ShowListFull: false,
             ShowShadow: false,
             valueTextInput: '',
+            nameUser: ''
             // pathImgLogo_white: '/src/assets/image/Logo.png',
             // pathImgLogo_dark: '/src/assets/image/Logo_dark.png',
             // showLogoTheme: true
@@ -23,11 +24,17 @@ export default {
         valueIconsCategory: { type: HTMLElement, Required: true },
         // showLogoTheme: { type: Boolean, Required: true }
     },
-    // mounted() {
-    //     if(this.valueIconsCategory.classList.contains('theme_Light')) {
-    //         this.showLogoTheme = false
-    //     }
-    // },
+    mounted() {
+        const token = localStorage.getItem('authToken');
+        const user = localStorage.getItem('user');
+        const dataUser = JSON.parse(user);
+
+        console.log('token', token)
+        if(token) {
+            console.log('users', dataUser.name);
+            this.nameUser = dataUser.name
+        }
+    },
     methods: {
         openListFull(ListFull) {
             ListFull.classList.add('active');
@@ -68,9 +75,11 @@ export default {
                              <div id="box_iconUser">
                                 <IconUser />
                              </div>
-                            <p>
+                            <p v-if="!nameUser">
                                 Olá, <span @click="pass_route('Login', 'PageLogin')" class="span_links">Entre</span> ou <br> <span @click="pass_route('register', 'PageRegister')" class="span_links">Cadastre-se</span>
                             </p>
+
+                            <p v-else >Olá, {{ nameUser }}</p>
                         </aside>
 
                         <aside id="box_cart">

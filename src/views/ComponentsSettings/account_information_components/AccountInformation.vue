@@ -1,24 +1,36 @@
 <script>
 import NavBar from '@/components/ContentHeader/NavBar.vue';
 import TheFooter from '@/components/ContentMain/TheFooter.vue';
-import FormDataAccount from './FormDataAccount.vue';
-import FormChangePassword from './FormChangePassword.vue';
+import FormDataAccount from '@/views/ComponentsSettings/account_information_components/FormDataAccount.vue';
+import FormChangePassword from '@/views/ComponentsSettings/account_information_components/FormChangePassword.vue';
 import IconUser from '@/components/SubComponents/IconUser.vue';
-import ButtonToggleForm from '../AuthenticationPages/ButtonToggleForm.vue';
+import ButtonToggleForm from '@/views/AuthenticationPages/ButtonToggleForm.vue';
+import PageFalseToken from '@/components/SubComponents/PageFalseToken.vue';
 
 export default {
   name: 'AccountInformation',
-  components: { NavBar, TheFooter, FormDataAccount, FormChangePassword, IconUser, ButtonToggleForm },
+  components: { NavBar, TheFooter, FormDataAccount, FormChangePassword, IconUser, ButtonToggleForm, PageFalseToken },
   data() {
     return {
       nameBtnForms: 'Trocar senha',
-      showForms: true
+      showForms: true,
+      showSectionDataUser: false
     }
   },
   props: {
     pass_route: { type: Function, Required: true },
     valueIconsCategory: { type: HTMLElement, Required: true },
     showLogoTheme: { type: Boolean, Required: true }
+  },
+  mounted() {
+    const token = localStorage.getItem('authToken');
+    const dataUser = localStorage.getItem('user');
+
+    if(token) {
+        this.showSectionDataUser = true
+    } else {
+        this.showSectionDataUser = false
+    }
   },
   methods: {
     passEvent_toggleTheme() {
@@ -60,7 +72,7 @@ export default {
   :valueIconsCategory="valueIconsCategory"
   />
 
-  <div id="containerAccountInformation">
+  <div id="containerAccountInformation" v-if="showSectionDataUser">
     <div class="container_main_center">
         <div id="container_groupInfor">
           <aside id="containers_title">
@@ -92,13 +104,15 @@ export default {
     </div>
   </div>
 
+  <PageFalseToken v-else/>
+
   <TheFooter />
 
 </template>
 
 <style scoped>
 #containerAccountInformation {
-  /* border: 3px solid red; */
+  border: 3px solid rgb(255, 255, 255);
   width: 100vw;
   min-height: 70vh;
   padding-top: 9rem;

@@ -74,7 +74,8 @@ export default {
             this.summarys.push(el)
         },
         logout() {
-            localStorage.removeItem('token');
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('user');
             setTimeout(()=> {
                 window.location.reload();
             }, 1200)
@@ -107,7 +108,12 @@ export default {
                 case 'Minha Conta':
                     this.pass_route('config_conta', 'AccountInformation');
                     this.body.style.overflowY = 'scroll';
-            
+                    break;
+
+                case 'Meus Endereços':
+                    this.pass_route('config_conta', 'AddressInformation');
+                    this.body.style.overflowY = 'scroll';
+                    break
                 default:
                     break;
             }

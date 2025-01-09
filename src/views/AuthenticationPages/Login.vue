@@ -18,6 +18,9 @@ export default {
             textContentBtn: 'Entrar no sistema'
         }
     },
+    props: {
+        pass_route: { type: Function, Required: true },
+    },
     methods: {
         async GetDataLogin() {
             try {
@@ -44,7 +47,13 @@ export default {
 
                 console.log('essa é a data:', data)
 
-                localStorage.setItem("token", data.token);
+                // localStorage.setItem("token", data.token);
+
+                const { token, userDto } = data;
+                localStorage.setItem("authToken", token);
+                localStorage.setItem("user", JSON.stringify(userDto));
+
+
                 this.showModal = true
                 this.mensageModal = 'Login realizado com sucesso!'
                 this.show_accessSystem = true
@@ -68,9 +77,9 @@ export default {
 
             //está faltando a configuração do modal 
         },
-        BackHome(home, nameRouter) {
-            this.$router.push({ name: nameRouter, params: { home } });
-        },
+        // BackHome(home, nameRouter) {
+        //     this.$router.push({ name: nameRouter, params: { home } });
+        // },
         showStylePassword(event) {
             const Input = event.target
 
@@ -111,12 +120,15 @@ export default {
         accessSystem() {
             this.showModal = false
             setTimeout(()=> {
-                this.BackHome('Home', 'home')
+                this.pass_route('home', 'PageHome')
             }, 2000)  
         },
         closeModal() {
-            this.showModal = false
+            this.showModal = false;
             window.location.reload();
+        },
+        Btn_back() {
+            this.pass_route('home', 'PageHome');
         }
 
     }
@@ -137,7 +149,7 @@ export default {
                 <img src="../../assets/image/Logo.png" alt="ImageLogoAplication">
             </div>
 
-            <p @click="BackHome('Home', 'home')" id="Btn_back">Voltar</p>
+            <p @click="Btn_back" id="Btn_back">Voltar</p>
         </div>
 
         <div id="containerCenterFormLogin">

@@ -14,6 +14,9 @@ export default {
             showForms: true
         }
     },
+    props: {
+        pass_route: { type: Function, Required: true },
+    },
     methods: {
         ToggleForms(event) {
             const button = event.target
@@ -32,9 +35,10 @@ export default {
                 this.titleForm = 'Cadastro usuário comum'
             }
         },
-        BackHome(home, nameRouter) {
-            this.$router.push({ name: nameRouter, params: { home } });
-        },
+        
+        // BackHome(home, nameRouter) {
+        //     this.$router.push({ name: nameRouter, params: { home } });
+        // },
         isValidCPF(cpf) {
             // Remove caracteres não numéricos
             cpf = cpf.replace(/[^\d]+/g, '');
@@ -141,10 +145,13 @@ export default {
                 .replace(/^(\d{2})\.(\d{3})\.(\d{3})(\d)/, "$1.$2.$3/$4")
                 .replace(/^(\d{2})\.(\d{3})\.(\d{3})\/(\d{4})(\d)/, "$1.$2.$3/$4-$5");
         },
-        BackHome(home, nameRouter) {
-            this.$router.push({ name: nameRouter, params: { home } });
-        },
+        // BackHome(home, nameRouter) {
+        //     this.$router.push({ name: nameRouter, params: { home } });
+        // },
         
+        Btn_back() {
+            this.pass_route('home', 'PageHome');
+        }
     }
 }
 </script>
@@ -156,7 +163,7 @@ export default {
             <div id="containerLogoAplication">
                 <img src="../../assets/image/Logo.png" alt="ImageLogoAplication">
             </div>
-            <p @click="BackHome('Home', 'home')" id="Btn_back">voltar</p>
+            <p @click="Btn_back" id="Btn_back">voltar</p>
         </div>
         <div id="container_forms">
             <div id="container_topInforRegister">
