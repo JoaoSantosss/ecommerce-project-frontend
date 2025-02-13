@@ -121,7 +121,7 @@ export default {
             this.showModal = false
             setTimeout(()=> {
                 this.pass_route('home', 'PageHome')
-            }, 2000)  
+            })  
         },
         closeModal() {
             this.showModal = false;

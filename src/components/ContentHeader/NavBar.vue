@@ -31,7 +31,7 @@ export default {
 
         console.log('token', token)
         if(token) {
-            console.log('users', dataUser.name);
+            console.log('users', dataUser);
             this.nameUser = dataUser.name
         }
     },
@@ -63,9 +63,16 @@ export default {
             
                 <div id="container_inforNavBar">
                     <div id="group_MenuAndLogo">
-                        <BurgerMenu @PassValueShowListFull="toggleValueBoolean" @PassValueShowShadow="toggleValueBoolean"/>
+                        <BurgerMenu 
+                         @PassValueShowListFull="toggleValueBoolean"
+                         @PassValueShowShadow="toggleValueBoolean"
+                         />
+                         
                         <div id="containerLogo">
-                            <Logo :ShowLogoTheme="showLogoTheme"/>
+                            <Logo 
+                             :ShowLogoTheme="showLogoTheme"
+                             :pass_route="pass_route"
+                            />
                         </div>
                     </div>
 

@@ -27,9 +27,9 @@ export default {
     const dataUser = localStorage.getItem('user');
 
     if(token) {
-        this.showSectionDataUser = true
+        this.showSectionDataUser = true;
     } else {
-        this.showSectionDataUser = false
+        this.showSectionDataUser = false;
     }
   },
   methods: {

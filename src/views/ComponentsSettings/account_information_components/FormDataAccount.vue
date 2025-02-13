@@ -5,9 +5,9 @@ export default {
   data() {
     return {
       UserDate: {
-        name: 'Carlos Eduardo da Silva Sampaio',
-        email: 'sampaiocarlos957@gmail.com',
-        cpf: '62052743375'
+        name: 'teste',
+        email: 'teste',
+        cpf: 'teste'
       },
       mensageCustom_error: 'deu ruim!'
     }
@@ -22,6 +22,16 @@ export default {
     };
     checkAndApplyCpfMask();
     this.intervalId = setInterval(checkAndApplyCpfMask, 120000); // 120.000 = 2 minutos
+
+    const token = localStorage.getItem('authToken');
+    const user = localStorage.getItem('user');
+    const dataUser = JSON.parse(user);
+
+    if(token) {
+        this.UserDate.name = dataUser.name
+        this.UserDate.email = dataUser.email
+        this.UserDate.cpf = dataUser.cpf
+    }
   },
 
   beforeDestroy() {

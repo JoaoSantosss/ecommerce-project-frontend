@@ -179,7 +179,7 @@ export default {
     top: 0%;
     background-color: var(--background--strong);
     color: var(--color--text);
-    z-index: 100;
+    z-index: 10000;
     transition: 0.2s;
     display: flex;
     flex-direction: column;

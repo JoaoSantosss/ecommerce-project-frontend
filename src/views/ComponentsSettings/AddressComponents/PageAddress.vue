@@ -5,20 +5,32 @@ import ContainerCardsAddress from './ContainerCardsAddress.vue';
 import FormRegisterAddress from './FormRegisterAddress.vue';
 
 import IconLocation from '@/components/SubComponents/IconLocation.vue';
+import PageFalseToken from '@/components/SubComponents/PageFalseToken.vue';
 
 import ButtonToggleForm from '@/views/AuthenticationPages/ButtonToggleForm.vue';
 export default {
     name: 'PageAddress',
-    components: { NavBar, TheFooter, IconLocation, ButtonToggleForm, ContainerCardsAddress, FormRegisterAddress },
+    components: { NavBar, TheFooter, IconLocation, PageFalseToken, ButtonToggleForm, ContainerCardsAddress, FormRegisterAddress },
     data() {
         return {
             TextContentBtn: 'Cadastrar novo endereço',
-            showContentAddress: true
+            showContentAddress: true,
+            showSectionDataAddress: false
         }
     },
     props: {
         pass_route: { type: Function, Required: true },
         valueIconsCategory: { type: HTMLElement, Required: true },
+    },
+    mounted() {
+        const token = localStorage.getItem('authToken');
+        const user = localStorage.getItem('user');
+
+        if(token) {
+            this.showSectionDataAddress = true;
+        }else {
+            this.showSectionDataAddress = false;
+        }
     },
     methods: {
         passEvent_toggleTheme() {
@@ -47,7 +59,7 @@ export default {
      :valueIconsCategory="valueIconsCategory"
     />
     
-    <div id="containerPageAddress">
+    <div id="containerPageAddress" v-if="showSectionDataAddress">
         <div class="container_main_center">
             <div id="titleSection">
                 <div id="icon_address">
@@ -76,6 +88,8 @@ export default {
         </div>
     </div>
 
+    <PageFalseToken v-else/>
+
      <TheFooter />
 </template>
 
@@ -102,7 +116,7 @@ export default {
 }
 
 #box_toggleSection_address {
-    border: 2px solid blue;
+    /* border: 2px solid blue; */
     padding: 40px 0;
 }
 
@@ -110,6 +124,6 @@ export default {
     width: 100%;
     min-height: 50vh;
     padding-bottom: 50px;
-    border: 3px solid red;
+    /* border: 3px solid red; */
 }
 </style>
