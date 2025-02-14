@@ -3,3 +3,34 @@
   padding: 0;
   box-sizing: border-box;
 }
+
+body {
+  width: 100vw;
+  min-height: 100vh;
+  overflow-x: hidden;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+:root {
+  --color_navbar: #171717;
+  --color--text: #fff;
+
+
+
+
+
+  --icon--user: url("../image/user_icon_white.png");
+  --icon--cartProduct: url("../image/cart_product_icon.png");
+}
+
+.Theme_dark {
+  --color_navbar: #171717;
+  --color--text: #000000;
+}
+
+
+.container_main_center {
+  width: 85%;
+  margin: auto;
+  /* border: 1px solid red; */
+}

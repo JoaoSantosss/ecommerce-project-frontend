@@ -1,9 +1,19 @@
 <script setup lang="ts">
-import TheHeader from './components/ComponentsMain/TheHeader.vue';
+import { RouterView, useRoute  } from 'vue-router'
+
+import Home from './layouts/Home.vue'
+
+const route = useRoute()
+
+
 </script>
 
 <template>
-  <TheHeader />
+
+  <Home v-if="!['/login', '/register'].includes(route.path)"/>
+  
+
+  <router-view v-else></router-view>
 </template>
 
 <style scoped>
