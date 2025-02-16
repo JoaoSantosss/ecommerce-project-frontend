@@ -8,15 +8,30 @@ import FormPersonSeller from './FormPersonSeller.vue'
 
 const router = useRouter()
 
+const TitleForms = ref('Cadastro usuário comum');
+const NameButton = ref('Cadastro vendedor');
+
 function RouterLogin() {
     router.push('/')
 }
 
 const ShowFormPersonSeller = ref(false);
-function toggleForm(): void {
-    ShowFormPersonSeller.value = !ShowFormPersonSeller.value
-}
+function toggleForm(event: Event): void {
+    // ShowFormPersonSeller.value = !ShowFormPersonSeller.value
 
+    const button = event.target as HTMLButtonElement
+    button.classList.toggle('active')
+
+    if (button?.classList.contains('active')) {
+        ShowFormPersonSeller.value = true
+        TitleForms.value = 'Cadastro como vendedor'
+        NameButton.value = 'Cadastro Pessoa comum'
+    } else {
+        ShowFormPersonSeller.value = false
+        TitleForms.value = 'Cadastro usuário comum'
+        NameButton.value = 'Cadastro vendedor'
+    }
+}
 function styleInputFocus(event: Event): void {
     const input = event.target as HTMLInputElement;
 
@@ -29,7 +44,64 @@ function styleInputFocus(event: Event): void {
     }
 
     //FUNÇÃO PARA PERSISTIR O FOCO DO INPUT CASO TIVER ALGO ESCRITO NELE
+}
 
+function GenereteError(input: HTMLInputElement, className: string, box: HTMLDivElement, Paragraph: HTMLParagraphElement, text: string): void {
+    input.classList.add(className);
+    box.style.display = 'flex';
+    Paragraph.textContent = text
+    input.focus();
+    return
+}
+
+function applyCpfMask(value: string): string {
+    value = value.replace(/[^\d]/g, "");
+
+    return value
+        .replace(/^(\d{3})(\d)/, "$1.$2")
+        .replace(/^(\d{3})\.(\d{3})(\d)/, "$1.$2.$3")
+        .replace(/^(\d{3})\.(\d{3})\.(\d{3})(\d)/, "$1.$2.$3-$4");
+}
+
+function isValidCPF(cpf: string): boolean {
+    // Remove caracteres não numéricos
+    cpf = cpf.replace(/[^\d]+/g, '');
+
+    // Verifica se o CPF tem 11 dígitos e não é uma sequência de dígitos iguais
+    if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) {
+        return false;
+    }
+
+    // Função para calcular o dígito verificador
+    const calculateDigit = (digits: number[], weights: number[]) => {
+        let sum = 0;
+        for (let i = 0; i < digits.length; i++) {
+            sum += digits[i] * weights[i];
+        }
+        const remainder = (sum * 10) % 11;
+        return remainder === 10 ? 0 : remainder;
+    };
+
+    // Calcula o primeiro dígito verificador
+    const firstNineDigits = cpf.substring(0, 9).split('').map(Number);
+    const firstDigit = calculateDigit(firstNineDigits, [10, 9, 8, 7, 6, 5, 4, 3, 2]);
+
+    // Verifica o primeiro dígito verificador
+    if (firstDigit !== Number(cpf.charAt(9))) return false;
+
+    // Calcula o segundo dígito verificador
+    const firstTenDigits = cpf.substring(0, 10).split('').map(Number);
+    const secondDigit = calculateDigit(firstTenDigits, [11, 10, 9, 8, 7, 6, 5, 4, 3, 2]);
+
+    // Verifica o segundo dígito verificador
+    return secondDigit === Number(cpf.charAt(10));
+}
+
+
+function isEmailValue(email: string): boolean {
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]{2,}$/;
+
+    return emailRegex.test(email);
 }
 </script>
 
@@ -45,13 +117,20 @@ function styleInputFocus(event: Event): void {
         <section id="container_MainFormRegister">
             <div id="containerGroupForms_register">
                 <div id="TopLocal_ContainerForm_Register">
-                    <h1 id="titleForm">Cadastro usuário comum</h1>
+                    <h1 id="titleForm">{{ TitleForms }}</h1>
 
-                    <button id="buttonToggleForm" @click="toggleForm">Cadastro vendedor</button>
+                    <button id="buttonToggleForm" @click="toggleForm">{{ NameButton }}</button>
                 </div>
 
-                <FormPersonCommon v-if="!ShowFormPersonSeller" :styleInputFocus="styleInputFocus"/>                
-                <FormPersonSeller v-else/>
+                <FormPersonCommon 
+                v-if="!ShowFormPersonSeller" 
+                :styleInputFocus="styleInputFocus"
+                :GenereteError="GenereteError"
+                :maskCPF="applyCpfMask"
+                :isValidCPF="isValidCPF"
+                :isEmailValue="isEmailValue"
+                />                
+                <FormPersonSeller v-else :styleInputFocus="styleInputFocus"/>
 
             </div>
         </section>
@@ -70,7 +149,7 @@ function styleInputFocus(event: Event): void {
     display: flex;
     flex-direction: column;
     /* justify-content: space-between; */
-    gap: 100px;
+    gap: 50px;
 }
 
 #container_logo_back_Login {
@@ -113,6 +192,8 @@ function styleInputFocus(event: Event): void {
     display: flex;
     flex-direction: column;
     gap: 80px;
+
+    margin-bottom: 50px;
 }
 
 #TopLocal_ContainerForm_Register {
