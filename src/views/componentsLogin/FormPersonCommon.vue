@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import type { TypeRawData, TypeTratData } from '../../interfaces/interfaces'
-import { RegisterUserCommon } from '../../services/requests'
+import { RegisterUserCommon } from '../../services/authService'
 
 import { defineProps } from 'vue';
 import { getImageUrl } from '../../utils/imageHelper';
@@ -14,6 +14,12 @@ const props = defineProps<{
     isEmailValue: (email: string) => boolean
 }>();
 
+const emits = defineEmits<{
+    showModalSucessRegisterUser: [status: boolean];
+    showModalErrorRegisterUser: [status: boolean]; // Evento aceita um booleano como argumento
+}>();
+
+//ALGUMA COISA RELACIONADA COM ESSE EMIT TÁ GERANDO UM ALERTA NO CONSOLE OU É COISA NO COMPONENTE DO MODAL
 
 const RawData = ref<TypeRawData[]>([{
     Name: '',
@@ -101,7 +107,7 @@ async function submit(event: Event): Promise<void> {
         )
         return
     } 
-    if(RawData.value[0].Password.length <= 8) {
+    if(RawData.value[0].Password.length < 8) {
         props.GenereteError(
             document.getElementById('Password') as HTMLInputElement,
             'classError' as string,
@@ -120,8 +126,19 @@ async function submit(event: Event): Promise<void> {
 
     const sucess = await RegisterUserCommon(endpoint, TratData.value);
 
-    console.log(sucess);
+    if(sucess) {
+        console.log(sucess);
+        emits('showModalSucessRegisterUser', true);
 
+        RawData.value[0].Name = ''
+        RawData.value[0].Surname = ''
+        RawData.value[0].Cpf = ''
+        RawData.value[0].Email = ''
+        RawData.value[0].ConfirmEmail = ''
+        RawData.value[0].Password = ''
+    } else {
+        emits('showModalErrorRegisterUser', true);
+    }
     //AQUI JÁ ESTOU CONSEGUINDO ME COMUNICAR COM O BACKEND PARA CADASTRAR O USUARIO
     
 }

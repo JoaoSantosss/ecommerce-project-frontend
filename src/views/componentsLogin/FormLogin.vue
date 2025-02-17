@@ -1,5 +1,23 @@
 <script setup lang="ts">
+import { ref, computed, defineProps } from 'vue'
 
+import type { TypeDataLogin, TypeTratDataLogin } from '../../interfaces/interfaces'
+
+// const props = defineProps<{
+//     GenereteError: (input: HTMLInputElement, className: string, box: HTMLDivElement, Paragraph: HTMLParagraphElement, text: string) => void;
+//     isEmailValue: (email: string) => boolean
+// }>();
+
+
+const DataLogin = ref<TypeDataLogin[]>([{
+    Email: '',
+    Password: ''
+}])
+
+const TratData = computed<TypeTratDataLogin>(() => ({
+    email: DataLogin.value[0].Email,
+    password: DataLogin.value[0].Password
+}))
 
 function styleInputFocus(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -18,6 +36,20 @@ function styleInputFocus(event: Event): void {
 
 function submit(event: Event): void {
     event.preventDefault()
+
+    console.log(TratData.value);
+    
+
+    // if(!props.isEmailValue(DataLogin.value[0].Email)) {
+    //     props.GenereteError(
+    //         document.getElementById('Email') as HTMLInputElement,
+    //         'classError' as string,
+    //         document.querySelector('.boxErrorEmail') as HTMLDivElement,
+    //         document.querySelector('.boxErrorEmail p') as HTMLParagraphElement,
+    //         'Formato de email inválido!'
+    //     )
+    //     return
+    // } 
 }
 </script>
 
@@ -27,11 +59,21 @@ function submit(event: Event): void {
             <h1>Login</h1>
 
             <aside>
-                <input type="text" id="Name" @keyup="styleInputFocus">
-                <label for="Name">Nome</label>
+                <input 
+                type="text" 
+                id="Name" 
+                @keyup="styleInputFocus"
+                v-model="DataLogin[0].Email"
+                >
+                <label for="Name">Email</label>
             </aside>
             <aside>
-                <input type="text" id="Password" @keyup="styleInputFocus">
+                <input 
+                type="text" 
+                id="Password" 
+                @keyup="styleInputFocus"
+                v-model="DataLogin[0].Password"
+                >
                 <label for="Password">Senha</label>
                 <span id="forgotPassword">Esqueci minha senha</span>
                 

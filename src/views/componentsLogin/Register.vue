@@ -5,6 +5,8 @@ import { useRouter } from 'vue-router'
 
 import FormPersonCommon from './FormPersonCommon.vue'
 import FormPersonSeller from './FormPersonSeller.vue'
+import AlertRegisterSucess from '../../components/Modais/AlertRegisterSucess.vue'
+import AlertRegisterError from '../../components/Modais/AlertErrorRegister.vue'
 
 const router = useRouter()
 
@@ -13,6 +15,10 @@ const NameButton = ref('Cadastro vendedor');
 
 function RouterLogin() {
     router.push('/')
+}
+
+function RouterPageLogin(): void {
+    router.push('/login')
 }
 
 const ShowFormPersonSeller = ref(false);
@@ -63,6 +69,16 @@ function applyCpfMask(value: string): string {
         .replace(/^(\d{3})\.(\d{3})\.(\d{3})(\d)/, "$1.$2.$3-$4");
 }
 
+function applyCnpjMask(value: string): string {
+    value = value.replace(/[^\d]/g, "");
+
+    return value
+        .replace(/^(\d{2})(\d)/, "$1.$2")
+        .replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3")
+        .replace(/^(\d{2})\.(\d{3})\.(\d{3})(\d)/, "$1.$2.$3/$4")
+        .replace(/^(\d{2})\.(\d{3})\.(\d{3})\/(\d{4})(\d)/, "$1.$2.$3/$4-$5");
+}
+
 function isValidCPF(cpf: string): boolean {
     // Remove caracteres não numéricos
     cpf = cpf.replace(/[^\d]+/g, '');
@@ -97,12 +113,83 @@ function isValidCPF(cpf: string): boolean {
     return secondDigit === Number(cpf.charAt(10));
 }
 
+function isValidCNPJ(cnpj: string): boolean {
+    cnpj = cnpj.replace(/[^\d]+/g, '');
+
+    if (cnpj.length !== 14) {
+        return false;
+    }
+
+    // Elimina CNPJs inválidos conhecidos
+    if (/^(\d)\1*$/.test(cnpj)) {
+        return false;
+    }
+
+    // Validação do primeiro dígito verificador
+    let tamanho = cnpj.length - 2;
+    let numeros = cnpj.substring(0, tamanho);
+    let digitos = cnpj.substring(tamanho);
+    let soma = 0;
+    let pos = tamanho - 7;
+
+    for (let i = tamanho; i >= 1; i--) {
+        soma += parseInt(numeros.charAt(tamanho - i)) * pos--;
+        if (pos < 2) {
+            pos = 9;
+        }
+    }
+
+    let resultado = soma % 11 < 2 ? 0 : 11 - (soma % 11);
+    if (resultado !== parseInt(digitos.charAt(0))) {
+        return false;
+    }
+
+    // Validação do segundo dígito verificador
+    tamanho = tamanho + 1;
+    numeros = cnpj.substring(0, tamanho);
+    soma = 0;
+    pos = tamanho - 7;
+
+    for (let i = tamanho; i >= 1; i--) {
+        soma += parseInt(numeros.charAt(tamanho - i)) * pos--;
+        if (pos < 2) {
+            pos = 9;
+        }
+    }
+
+    resultado = soma % 11 < 2 ? 0 : 11 - (soma % 11);
+    if (resultado !== parseInt(digitos.charAt(1))) {
+        return false;
+    }
+
+    return true;
+}
+
 
 function isEmailValue(email: string): boolean {
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]{2,}$/;
 
     return emailRegex.test(email);
 }
+
+
+const showModalSucess = ref(false);
+const onShowModalSucess = (status: boolean) => {
+  if (status) {
+    showModalSucess.value = true
+  }
+};
+
+const showModalError = ref(false);
+const onShowModalError = (status: boolean) => {
+  if (status) {
+    showModalError.value = true
+  }
+};
+
+
+
+
 </script>
 
 <template>
@@ -129,12 +216,27 @@ function isEmailValue(email: string): boolean {
                 :maskCPF="applyCpfMask"
                 :isValidCPF="isValidCPF"
                 :isEmailValue="isEmailValue"
+                @showModalSucessRegisterUser="onShowModalSucess"
+                @showModalErrorRegisterUser="onShowModalError"
                 />                
-                <FormPersonSeller v-else :styleInputFocus="styleInputFocus"/>
+                <FormPersonSeller 
+                v-else 
+                :styleInputFocus="styleInputFocus"
+                :GenereteError="GenereteError"
+                :maskCPF="applyCpfMask"
+                :maskCNPJ="applyCnpjMask"
+                :isValidCPF="isValidCPF"
+                :isValidCNPJ="isValidCNPJ"
+                :isEmailValue="isEmailValue"
+                />
 
             </div>
         </section>
     </div>
+
+    <AlertRegisterSucess v-if="showModalSucess" @closeModal="showModalSucess = false" :NextPath="RouterPageLogin"/>
+    <AlertRegisterError v-if="showModalError" @closeModal="showModalError = false"/>
+    
 </template>
 
 <style scoped>
