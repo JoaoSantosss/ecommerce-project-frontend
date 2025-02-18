@@ -44,6 +44,21 @@ onMounted(() => {
     props.maskCPF(RawData.value[0].Cpf)
 })
 
+
+
+const clearInputs = (): void => {
+    RawData.value[0].Name = ''
+    RawData.value[0].Surname = ''
+    RawData.value[0].Cpf = ''
+    RawData.value[0].Email = ''
+    RawData.value[0].ConfirmEmail = ''
+    RawData.value[0].Password = ''
+}
+
+
+const buttonRegisterCommon = ref<HTMLButtonElement | null>(null);
+const textButton = ref('Cadastrar');
+
 async function submit(event: Event): Promise<void> {
     event.preventDefault();
 
@@ -121,6 +136,12 @@ async function submit(event: Event): Promise<void> {
 
     console.log(TratData.value);
 
+    textButton.value = 'Carregando...'
+    if(buttonRegisterCommon.value) {
+        buttonRegisterCommon.value.disabled = true;
+    }
+
+
     const endpoint = 'http://localhost:8080/user'
 
 
@@ -130,21 +151,24 @@ async function submit(event: Event): Promise<void> {
         console.log(sucess);
         emits('showModalSucessRegisterUser', true);
 
-        RawData.value[0].Name = ''
-        RawData.value[0].Surname = ''
-        RawData.value[0].Cpf = ''
-        RawData.value[0].Email = ''
-        RawData.value[0].ConfirmEmail = ''
-        RawData.value[0].Password = ''
+        clearInputs()
+
+        textButton.value = 'Cadastrar'
+        if(buttonRegisterCommon.value) {
+            buttonRegisterCommon.value.disabled = false;
+        }
+
     } else {
         emits('showModalErrorRegisterUser', true);
-    }
-    //AQUI JÁ ESTOU CONSEGUINDO ME COMUNICAR COM O BACKEND PARA CADASTRAR O USUARIO
-    
-}
 
-//NESSE CENARIO A FUNÇÃO KeyInputs É RESPONSAVEL POR TIRAR O ESTILO DE ERRO E NO SUBMIT GERA 
-//OS ESTILOS BASEADOS NOS RESULTADOS SE O CAMPO TIVER COM ERRO OU NÃO
+        clearInputs()
+
+        textButton.value = 'Cadastrar'
+        if(buttonRegisterCommon.value) {
+            buttonRegisterCommon.value.disabled = false;
+        }
+    }
+}
 
 function KeyInputs(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -254,7 +278,6 @@ function KeyInputs(event: Event): void {
             </aside>
         </section>
 
-
         <section class="sections">
             <aside class="asides">
                 <input 
@@ -274,7 +297,7 @@ function KeyInputs(event: Event): void {
             </aside>
 
             <aside class="asides asideButton">
-                <button id="buttonRegisterCommon">Cadastrar</button>
+                <button id="buttonRegisterCommon" ref="buttonRegisterCommon">{{ textButton }}</button>
             </aside>
         </section>
     </form>
@@ -325,6 +348,18 @@ function KeyInputs(event: Event): void {
     transition: all 0.3s ease;
     cursor: pointer;
 }
+
+
+/*SERVE PARA REMOVE AQUELA COR CLARA QUANDO O NAVEGADOR AJUDA O USUÁRIO A PREENCHER O CAMPO*/
+input:-webkit-autofill {
+  background-color: transparent !important;
+  box-shadow: 0 0 0px 1000px rgba(255, 255, 255, 0) inset !important;
+  -webkit-box-shadow: 0 0 0px 1000px rgba(255, 255, 255, 0) inset !important;
+  color: white !important; /* Define a cor do texto como branco */
+  -webkit-text-fill-color: white !important; /* Garante a cor do texto no autofill */
+  transition: background-color 5000s ease-in-out 0s;
+}
+
 
 .asides > input:focus {
     border-bottom: 3px solid #ffffff;

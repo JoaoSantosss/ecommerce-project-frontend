@@ -5,8 +5,8 @@ import { useRouter } from 'vue-router'
 
 import FormPersonCommon from './FormPersonCommon.vue'
 import FormPersonSeller from './FormPersonSeller.vue'
-import AlertRegisterSucess from '../../components/Modais/AlertRegisterSucess.vue'
-import AlertRegisterError from '../../components/Modais/AlertErrorRegister.vue'
+import AlertSucess from '../../components/Modais/AlertSucess.vue'
+import AlertError from '../../components/Modais/AlertError.vue'
 
 const router = useRouter()
 
@@ -17,8 +17,9 @@ function RouterLogin() {
     router.push('/')
 }
 
-function RouterPageLogin(): void {
+function RouterPageLogin(): string {
     router.push('/login')
+    return ''
 }
 
 const ShowFormPersonSeller = ref(false);
@@ -165,7 +166,6 @@ function isValidCNPJ(cnpj: string): boolean {
     return true;
 }
 
-
 function isEmailValue(email: string): boolean {
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]{2,}$/;
 
@@ -187,7 +187,10 @@ const onShowModalError = (status: boolean) => {
   }
 };
 
-
+const closeModal = (): void => {
+    showModalError.value = false
+    location.reload()
+}
 
 
 </script>
@@ -228,14 +231,29 @@ const onShowModalError = (status: boolean) => {
                 :isValidCPF="isValidCPF"
                 :isValidCNPJ="isValidCNPJ"
                 :isEmailValue="isEmailValue"
+                @showModalSucessRegisterUser="onShowModalSucess"
+                @showModalErrorRegisterUser="onShowModalError"
                 />
 
             </div>
         </section>
     </div>
 
-    <AlertRegisterSucess v-if="showModalSucess" @closeModal="showModalSucess = false" :NextPath="RouterPageLogin"/>
-    <AlertRegisterError v-if="showModalError" @closeModal="showModalError = false"/>
+    <AlertSucess 
+    v-if="showModalSucess" 
+    @closeModal="showModalSucess = false" 
+    :NextPath="RouterPageLogin" 
+    :TextContent="'Cadastro realizado com sucesso!'"
+    :TextButton="'Ir para login'"
+    :buttonOK="true"
+    />
+
+    <AlertError 
+    v-if="showModalError" 
+    @closeModal="closeModal"
+    :TextContent="'Erro ao realizar o cadastro, tente novamente'"
+    
+    />
     
 </template>
 

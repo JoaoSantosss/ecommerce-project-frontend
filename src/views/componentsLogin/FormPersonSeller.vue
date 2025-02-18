@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import { defineProps } from 'vue';
+import { ref, computed, defineProps, defineEmits } from 'vue'
 import { getImageUrl } from '../../utils/imageHelper'
+
 import type { TypeRawDataSeller, TypeTratDataSeller } from '../../interfaces/interfaces'
 
 
@@ -17,6 +17,13 @@ const props = defineProps<{
     isValidCNPJ: (cnpj: string) => boolean;
     isEmailValue: (email: string) => boolean
 }>();
+
+
+const emits = defineEmits<{
+    showModalSucessRegisterUser: [status: boolean];
+    showModalErrorRegisterUser: [status: boolean]; // Evento aceita um booleano como argumento
+}>();
+
 
 const RawDataSeller = ref<TypeRawDataSeller[]>([{
     Name: '',
@@ -40,14 +47,25 @@ const TratData = computed<TypeTratDataSeller>(() => ({
     password: RawDataSeller.value[0].Password
 }))
 
+const clearInputs = (): void => {
+    RawDataSeller.value[0].Name = ''
+    RawDataSeller.value[0].Surname = ''
+    RawDataSeller.value[0].Cpf = ''
+    RawDataSeller.value[0].Cnpj = ''
+    RawDataSeller.value[0].LegalName = ''
+    RawDataSeller.value[0].Email = ''
+    RawDataSeller.value[0].ConfirmEmail = ''
+    RawDataSeller.value[0].Password = ''
+}
 
+
+const buttonRegisterSeller = ref<HTMLButtonElement | null>(null);
+const textButton = ref('Cadastrar');
 
 async function submit(event: Event): Promise<void> {
     event.preventDefault()
 
     
-
-
     if(RawDataSeller.value[0].Name.length <= 3) {
         props.GenereteError(
             document.getElementById('Name') as HTMLInputElement,
@@ -152,19 +170,34 @@ async function submit(event: Event): Promise<void> {
 
     console.log(TratData.value);
 
+    textButton.value = 'Carregando...'
+    if(buttonRegisterSeller.value) {
+        buttonRegisterSeller.value.disabled = true;
+    }
+
     const endpoint = 'http://localhost:8080/user/seller'
 
     const sucess = await RegisterUserSeller(endpoint, TratData.value)
 
     if(sucess) {
-        alert('deu bom!!')
+        emits('showModalSucessRegisterUser', true);
+
+        clearInputs()
+        textButton.value = 'Cadastrar'
+        if(buttonRegisterSeller.value) {
+            buttonRegisterSeller.value.disabled = false;
+        }
     } else {
-        alert('deu merda')
+        emits('showModalErrorRegisterUser', true);
+
+        clearInputs()
+        textButton.value = 'Cadastrar'
+        if(buttonRegisterSeller.value) {
+            buttonRegisterSeller.value.disabled = false;
+        }
     }
     
 }
-
-
 
 function KeyInputs(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -262,7 +295,6 @@ function KeyInputs(event: Event): void {
             </aside>
         </section>
 
-
         <section class="sections"> 
             <aside class="asides_full asides">
                 <input 
@@ -341,7 +373,7 @@ function KeyInputs(event: Event): void {
             </aside>
 
             <aside class="asides asideButton">
-                <button id="buttonRegisterSeller">Cadastrar</button>
+                <button id="buttonRegisterSeller" ref="buttonRegisterSeller">{{ textButton }}</button>
             </aside>
         </section>
     </form>
@@ -391,6 +423,14 @@ function KeyInputs(event: Event): void {
     font-size: 1.2vw;
     transition: all 0.3s ease;
     cursor: pointer;
+}
+input:-webkit-autofill {
+  background-color: transparent !important;
+  box-shadow: 0 0 0px 1000px rgba(255, 255, 255, 0) inset !important;
+  -webkit-box-shadow: 0 0 0px 1000px rgba(255, 255, 255, 0) inset !important;
+  color: white !important; /* Define a cor do texto como branco */
+  -webkit-text-fill-color: white !important; /* Garante a cor do texto no autofill */
+  transition: background-color 5000s ease-in-out 0s;
 }
 
 .asides > input:focus {

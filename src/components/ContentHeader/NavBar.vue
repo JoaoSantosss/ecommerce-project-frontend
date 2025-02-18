@@ -1,6 +1,6 @@
 <script setup lang="ts">
 //imports configurações
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { getImageUrl } from '../../utils/imageHelper'
 
@@ -12,6 +12,8 @@ import BurguerMenu from '../SubComponents/BurguerMenu.vue';
 
 const Controler = ref(false)
 
+const showOptionsLogin = ref(true)
+const NameUser = ref('')
 
 
 function toggle_btn(btn: any): void {
@@ -35,13 +37,23 @@ function reloadPage(): void {
 
 
 const router = useRouter()
-const RouterLogin = () => {
+const RouterLogin = (): void => {
   router.push('/login')
 }
-const RouterRegister = () => {
+const RouterRegister = (): void => {
   router.push('/register')
 }
 
+
+onMounted((): void => {
+    const token = localStorage.getItem('token')
+    const UserData = JSON.parse(localStorage.getItem('UserData') as string)
+
+    if (token && UserData) {
+        showOptionsLogin.value = false
+        NameUser.value = UserData.name
+    }
+})
 </script>
 
 <template>
@@ -62,10 +74,14 @@ const RouterRegister = () => {
                     <aside id="container_path_login">
                         <div id="box_iconUser"></div>
                             
-                        <p id="text_path_login">
+                        <p v-if="showOptionsLogin" id="text_path_login">
                             Olá, <strong style="cursor: pointer;" @click="RouterLogin">Entre</strong>
                              ou 
                             <br> <strong style="cursor: pointer;" @click="RouterRegister">Cadastre-se</strong>
+                        </p>
+
+                        <p v-else>
+                            Olá <strong>{{ NameUser }}</strong>
                         </p>
                     </aside>
 
@@ -74,7 +90,6 @@ const RouterRegister = () => {
                         <div id="box_iconCart"></div>
                     </aside>
                 </div>
-
             </div>
         </div>
     </nav>
@@ -125,6 +140,7 @@ nav {
 #container_logo > img {
     width: 100%;
     object-fit: contain;
+    
 }
 
 .activeStyleLogo {

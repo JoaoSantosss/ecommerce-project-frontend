@@ -3,26 +3,23 @@ import { defineEmits, defineProps } from 'vue';
 
 const emits = defineEmits(['closeModal']);
 
-const props = defineProps<{
-    NextPath: (path: string) => string
+
+defineProps<{
+    TextContent: string,
 }>();
 
-function func(): void {
-
-    props.NextPath('/login')
-}
+//MODAL PARA APARECER NO SUCESSO DOS CADASTROS DE USUÁRIOS
 </script>
 
 <template>
     <div class="overlay">
         <div class="modal">
             <button class="close-btn" @click="$emit('closeModal')">✖</button>
-            <div class="warning-icon">✅</div>
-            <!-- <h2>Atenção</h2> -->
-            <p>Cadastro realizado com sucesso!</p>
+            <div class="warning-icon">⚠️</div>
+            <h2>Atenção</h2>
+            <p>{{ TextContent }}</p>
             <div class="buttons">
                 <button class="cancel" @click="$emit('closeModal')">Ok</button>
-                <button class="logar" @click="func">Logar</button>
             </div>
         </div>
     </div>
@@ -105,15 +102,6 @@ button {
 
 .cancel:hover {
     background: #bbb;
-}
-
-.logar {
-    background: #00b7ffb6;
-    color: white;
-}
-
-.logar:hover {
-    background: #00b7ff;
 }
 
 .close-btn {

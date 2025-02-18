@@ -1,15 +1,64 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { getImageUrl } from '../../utils/imageHelper'
 
 import FormLogin from './FormLogin.vue';
+import AlertSucess from '../../components/Modais/AlertSucess.vue'
+import AlertError from '../../components/Modais/AlertError.vue';
+
+
+
 
 const router = useRouter()
 
 
 const RouterLogin = () => {
   router.push('/')
+  return ''
 }
+
+const showModalSucess = ref(false)
+
+
+const onShowModalSucess = (status: boolean): void => {
+  if (status) {
+    showModalSucess.value = true
+  }
+};
+
+
+const closeModal = (): void => {
+  showModalSucess.value = false
+  RouterLogin()
+}
+
+const showModalError = ref(false);
+
+const onShowModalError = (status: boolean): void => {
+  if (status) {
+    showModalError.value = true
+  }
+};
+
+
+
+
+function GenereteError(input: HTMLInputElement, className: string, box: HTMLDivElement, Paragraph: HTMLParagraphElement, text: string): void {
+    input.classList.add(className);
+    box.style.display = 'flex';
+    Paragraph.textContent = text
+    input.focus();
+    return
+}
+
+
+function isEmailValue(email: string): boolean {
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]{2,}$/;
+
+    return emailRegex.test(email);
+}
+
 </script>
 
 <template>
@@ -22,9 +71,31 @@ const RouterLogin = () => {
             <h1 id="backHome" @click="RouterLogin">Voltar</h1>
         </section>
         <section id="container_form">
-            <FormLogin />
+            <FormLogin 
+            @showModalSucessLoginUser="onShowModalSucess"
+            @showModalErrorLoginUser="onShowModalError"
+            :GenereteError="GenereteError"
+            :isEmailValue="isEmailValue"
+            />
         </section>
     </div>
+
+    <AlertSucess 
+    v-if="showModalSucess"
+    :NextPath="RouterLogin"
+    @closeModal="closeModal" 
+    :TextContent="'Login realizado com sucesso'"
+    :TextButton="'Ir para o site'"
+    :buttonOK="false"
+    />
+
+
+    <AlertError 
+    v-if="showModalError"
+    @closeModal="showModalError = false"
+    :TextContent="'Email ou senha incorretos'"
+    />
+
 </template>
 
 <style scoped>

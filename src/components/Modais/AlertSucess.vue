@@ -1,20 +1,33 @@
 <script setup lang="ts">
-import { defineEmits } from 'vue';
+import { defineEmits, defineProps } from 'vue';
 
 const emits = defineEmits(['closeModal']);
 
-//MODAL PARA APARECER NO SUCESSO DOS CADASTROS DE USUÁRIOS
+const props = defineProps<{
+    NextPath: (path: string) => string,
+    TextContent: string,
+    TextButton: string,
+    buttonOK: boolean
+}>();
+
+function func(): void {
+
+    props.NextPath('/login')
+}
 </script>
 
 <template>
     <div class="overlay">
         <div class="modal">
             <button class="close-btn" @click="$emit('closeModal')">✖</button>
-            <div class="warning-icon">⚠️</div>
-            <h2>Atenção</h2>
-            <p>Ocorreu um erro ao realizar o cadastro. Por favor, tente novamente mais tarde.</p>
+            <div class="warning-icon">Sucesso ✅</div>
+            <hr>
+            <br>
+
+            <p>{{ TextContent }}</p>
             <div class="buttons">
-                <button class="cancel" @click="$emit('closeModal')">Ok</button>
+                <button class="cancel" @click="$emit('closeModal')" v-if="buttonOK">Ok</button>
+                <button class="logar" @click="func">{{ TextButton }}</button>
             </div>
         </div>
     </div>
@@ -59,7 +72,7 @@ const emits = defineEmits(['closeModal']);
 .warning-icon {
     font-size: 40px;
     margin-bottom: 10px;
-    color: #ff9800;
+    color: #333;
 }
 
 h2 {
@@ -97,6 +110,15 @@ button {
 
 .cancel:hover {
     background: #bbb;
+}
+
+.logar {
+    background: #00b7ffb6;
+    color: white;
+}
+
+.logar:hover {
+    background: #00b7ff;
 }
 
 .close-btn {
