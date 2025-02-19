@@ -3,7 +3,8 @@ import { ref, computed, defineEmits, defineProps } from 'vue'
 import { getImageUrl } from '../../utils/imageHelper';
 
 
-import type { TypeDataLogin, TypeTratDataLogin } from '../../interfaces/interfaces'
+// import type { TypeDataLogin, TypeTratDataLogin, UserData } from '../../interfaces/interfaces'
+import type * as interfaces from '../../interfaces/interfaces';
 import { LoginUser } from '../../services/authService'
 
 
@@ -19,12 +20,12 @@ const emits = defineEmits<{
 }>();
 
 
-const DataLogin = ref<TypeDataLogin[]>([{
+const DataLogin = ref<interfaces.TypeDataLogin[]>([{
     Email: '',
     Password: ''
 }])
 
-const TratData = computed<TypeTratDataLogin>(() => ({
+const TratData = computed<interfaces.TypeTratDataLogin>(() => ({
     email: DataLogin.value[0].Email,
     password: DataLogin.value[0].Password
 }))
@@ -125,17 +126,9 @@ async function submit(event: Event): Promise<void> {
     }
     
 }
-//TEM QUE COLOCAR ESSA INTERFACE NO LUGAR
 
 
-interface UserData {
-    id: number;
-    name: string;
-    email: string;
-    cpf: string;
-}
-
-function GetDataLocalStorage(token: string, data: UserData): void {
+function GetDataLocalStorage(token: string, data: interfaces.UserData): void {
     localStorage.setItem("token", token);
 
     localStorage.setItem("UserData", JSON.stringify(data));
@@ -151,6 +144,26 @@ function KeyInputs(event: Event): void {
     containerMensageError.style.display = 'none';
 
 }
+
+const inputPassword = ref<HTMLInputElement | null>(null);
+
+function toggleIconEye(event: Event): void {
+    const element = event.target as HTMLInputElement;
+
+    element.classList.toggle('classEyeActive');
+
+    if (element.classList.contains('classEyeActive')) {
+        element.src = getImageUrl('icons8-visível-50.png')
+        inputPassword.value?.setAttribute('type', 'text')
+
+    } else {
+        element.src = getImageUrl('icons8-olho-100.png')
+        inputPassword.value?.setAttribute('type', 'password')
+    }
+}
+
+
+// TEM QUE REAJUSTA A FUNÇÃO DE VISUALIZAÇÃO DE SENHA
 </script>
 
 <template>
@@ -174,17 +187,21 @@ function KeyInputs(event: Event): void {
                     </div>
                 </div>
             </aside>
-            <aside>
+            <aside id="aside_password">
                 <input 
                 type="password" 
                 id="Password" 
                 @keyup="styleInputFocus"
                 @input="KeyInputs"
                 v-model="DataLogin[0].Password"
+                ref="inputPassword"
+
                 >
                 <label for="Password">Senha</label>
-                
 
+                <div id="containerViewPassword" @click="toggleIconEye">
+                    <img :src="getImageUrl('icons8-olho-100.png')" alt="">
+                </div>
                 <div class="containerMensageError boxErrorPassword">
                     <p>teste</p>
                     <div class="box_iconAlert">
@@ -237,7 +254,30 @@ aside {
     position: relative;
     flex-direction: column;
 }
+/* 
+#aside_password {
+    border: 1px solid red;
+} */
+#containerViewPassword {
+    position: absolute;
+    right: 0;
+    /* top: -3px; */
+    left: 95%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    /* background-color: aqua; */
 
+}
+
+#containerViewPassword > img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
 input {
     width: 100%;
     background-color: transparent;

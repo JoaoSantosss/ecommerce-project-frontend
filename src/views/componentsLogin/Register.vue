@@ -171,6 +171,15 @@ function isEmailValue(email: string): boolean {
 
     return emailRegex.test(email);
 }
+function applyPhoneMask(value: string): string {
+    value = value.replace(/[^\d]/g, ""); // Remove qualquer coisa que não seja número
+
+    return value
+        .replace(/^(\d{2})(\d)/, "($1) $2") // Adiciona os parênteses
+        .replace(/^(\(\d{2}\)) (\d)(\d{4})/, "$1 $2$3") // Adiciona o espaço após o DDD e o primeiro dígito do número
+        .replace(/^(\(\d{2}\)) (\d{5})(\d{4})/, "$1 $2-$3"); // Adiciona o hífen e finaliza a máscara
+}
+
 
 
 const showModalSucess = ref(false);
@@ -217,6 +226,7 @@ const closeModal = (): void => {
                 :styleInputFocus="styleInputFocus"
                 :GenereteError="GenereteError"
                 :maskCPF="applyCpfMask"
+                :applyPhoneMask="applyPhoneMask"
                 :isValidCPF="isValidCPF"
                 :isEmailValue="isEmailValue"
                 @showModalSucessRegisterUser="onShowModalSucess"
@@ -228,6 +238,7 @@ const closeModal = (): void => {
                 :GenereteError="GenereteError"
                 :maskCPF="applyCpfMask"
                 :maskCNPJ="applyCnpjMask"
+                :applyPhoneMask="applyPhoneMask"
                 :isValidCPF="isValidCPF"
                 :isValidCNPJ="isValidCNPJ"
                 :isEmailValue="isEmailValue"

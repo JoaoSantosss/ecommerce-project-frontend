@@ -2,7 +2,8 @@
 import { ref, computed, defineProps, defineEmits } from 'vue'
 import { getImageUrl } from '../../utils/imageHelper'
 
-import type { TypeRawDataSeller, TypeTratDataSeller } from '../../interfaces/interfaces'
+// import type { TypeRawDataSeller, TypeTratDataSeller } from '../../interfaces/interfaces'
+import type * as interfaces from '../../interfaces/interfaces';
 
 
 import { RegisterUserSeller } from '../../services/authService'
@@ -16,6 +17,7 @@ const props = defineProps<{
     isValidCPF: (cpf: string) => boolean;
     isValidCNPJ: (cnpj: string) => boolean;
     isEmailValue: (email: string) => boolean
+    applyPhoneMask: (value: string) => string
 }>();
 
 
@@ -25,12 +27,13 @@ const emits = defineEmits<{
 }>();
 
 
-const RawDataSeller = ref<TypeRawDataSeller[]>([{
+const RawDataSeller = ref<interfaces.TypeRawDataSeller[]>([{
     Name: '',
     Surname: '',
     Cpf: '',
     Cnpj: '',
     LegalName: '',
+    Telephone: '',
     Email: '',
     ConfirmEmail: '',
     Password: ''
@@ -38,12 +41,13 @@ const RawDataSeller = ref<TypeRawDataSeller[]>([{
 
 const fullName = computed(() => `${RawDataSeller.value[0].Name} ${RawDataSeller.value[0].Surname}`);
 
-const TratData = computed<TypeTratDataSeller>(() => ({
+const TratData = computed<interfaces.TypeTratDataSeller>(() => ({
     name: fullName.value,
     cpf: RawDataSeller.value[0].Cpf,
     cnpj: RawDataSeller.value[0].Cnpj,
     email: RawDataSeller.value[0].Email,
     legalName: RawDataSeller.value[0].LegalName,
+    phoneNumber: RawDataSeller.value[0].Telephone,
     password: RawDataSeller.value[0].Password
 }))
 
@@ -53,6 +57,7 @@ const clearInputs = (): void => {
     RawDataSeller.value[0].Cpf = ''
     RawDataSeller.value[0].Cnpj = ''
     RawDataSeller.value[0].LegalName = ''
+    RawDataSeller.value[0].Telephone = ''
     RawDataSeller.value[0].Email = ''
     RawDataSeller.value[0].ConfirmEmail = ''
     RawDataSeller.value[0].Password = ''
@@ -136,6 +141,16 @@ async function submit(event: Event): Promise<void> {
         )
         return
     }
+    if(RawDataSeller.value[0].Telephone.length <= 13) {
+        props.GenereteError(
+            document.getElementById('Telephone') as HTMLInputElement,
+            'classError' as string,
+            document.querySelector('.boxErrorTelephone') as HTMLDivElement,
+            document.querySelector('.boxErrorTelephone p') as HTMLParagraphElement,
+            'Telefone inválido!'
+        )
+        return
+    }
     if(!props.isEmailValue(RawDataSeller.value[0].Email)) {
         props.GenereteError(
             document.getElementById('Email') as HTMLInputElement,
@@ -210,8 +225,29 @@ function KeyInputs(event: Event): void {
         RawDataSeller.value[0].Cpf = props.maskCPF(RawDataSeller.value[0].Cpf)
     }else if(input.id == 'Cnpj') {
         RawDataSeller.value[0].Cnpj = props.maskCNPJ(RawDataSeller.value[0].Cnpj)
+    }else if(input.id == 'Telephone') {
+        RawDataSeller.value[0].Telephone = props.applyPhoneMask(RawDataSeller.value[0].Telephone)
     }
 }
+
+
+
+const inputPassword = ref<HTMLInputElement | null>(null);
+
+function toggleIconEye (event: Event): void {
+    const element = event.target as HTMLInputElement;
+
+    element.classList.toggle('classEyeActive');
+
+    if (element.classList.contains('classEyeActive')) {
+        element.src = getImageUrl('icons8-visível-50.png')
+        inputPassword.value?.setAttribute('type', 'text')
+    } else {
+        element.src = getImageUrl('icons8-olho-100.png')
+        inputPassword.value?.setAttribute('type', 'password')
+    }
+}
+
 
 </script>
 
@@ -313,6 +349,25 @@ function KeyInputs(event: Event): void {
                     </div>
                 </div>
             </aside>
+
+
+            <aside class="asides">
+                <input 
+                type="phone" 
+                id="Telephone" 
+                @keyup="props.styleInputFocus"
+                @input="KeyInputs"
+                v-model="RawDataSeller[0].Telephone"
+                maxlength="14"
+                >
+                <label for="Telephone">Telefone</label>
+                <div class="containerMensageError boxErrorTelephone">
+                    <p>Preencha o campo!</p>
+                    <div class="box_iconAlert">
+                        <img :src="getImageUrl('iconAlert.png')" alt="">
+                    </div>
+                </div>
+            </aside>
         </section>
 
         <section class="sections">
@@ -361,9 +416,14 @@ function KeyInputs(event: Event): void {
                 @keyup="props.styleInputFocus"
                 @input="KeyInputs"
                 v-model="RawDataSeller[0].Password"
+                ref="inputPassword"
 
                 >
                 <label for="Password">Senha</label>
+
+                <div id="containerViewPassword" @click="toggleIconEye">
+                    <img :src="getImageUrl('icons8-olho-100.png')" alt="">
+                </div>
                 <div class="containerMensageError boxErrorPassword">
                     <p>Preencha o campo!</p>
                     <div class="box_iconAlert">
@@ -403,12 +463,25 @@ function KeyInputs(event: Event): void {
     flex-direction: column;
     color: #ffffff;
 }
-.asides_full {
-    width: 100%;
-    /* border: 2px solid green; */
+
+#containerViewPassword {
+    width: 20px;
+    position: relative;
+    /* left: 0; */
+    right: -95%;
+    top: -70%;
+
     display: flex;
-    flex-direction: column;
-    color: #ffffff;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    /* background-color: aqua; */
+}
+#containerViewPassword > img {
+    width: 100%;
+    height: 100%;
 }
 
 .asides > input {

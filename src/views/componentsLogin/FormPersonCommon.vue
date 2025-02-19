@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
-import type { TypeRawData, TypeTratData } from '../../interfaces/interfaces'
+import type * as interfaces from '../../interfaces/interfaces';
 import { RegisterUserCommon } from '../../services/authService'
 
 import { defineProps } from 'vue';
@@ -11,7 +11,8 @@ const props = defineProps<{
     GenereteError: (input: HTMLInputElement, className: string, box: HTMLDivElement, Paragraph: HTMLParagraphElement, text: string) => void;
     maskCPF: (value: string) => string;
     isValidCPF: (cpf: string) => boolean;
-    isEmailValue: (email: string) => boolean
+    isEmailValue: (email: string) => boolean;
+    applyPhoneMask: (value: string) => string;
 }>();
 
 const emits = defineEmits<{
@@ -21,10 +22,11 @@ const emits = defineEmits<{
 
 //ALGUMA COISA RELACIONADA COM ESSE EMIT TÁ GERANDO UM ALERTA NO CONSOLE OU É COISA NO COMPONENTE DO MODAL
 
-const RawData = ref<TypeRawData[]>([{
+const RawData = ref<interfaces.TypeRawData[]>([{
     Name: '',
     Surname: '',
     Cpf: '',
+    Telefone: '',
     Email: '',
     ConfirmEmail: '',
     Password: ''
@@ -32,11 +34,12 @@ const RawData = ref<TypeRawData[]>([{
 
 const fullName = computed(() => `${RawData.value[0].Name} ${RawData.value[0].Surname}`);
 
-const TratData = computed<TypeTratData>(() => ({
+const TratData = computed<interfaces.TypeTratData>(() => ({
     name: fullName.value,
     cpf: RawData.value[0].Cpf,
     email: RawData.value[0].Email,
-    password: RawData.value[0].Password
+    password: RawData.value[0].Password,
+    phoneNumber: RawData.value[0].Telefone
 }))
 
 
@@ -50,6 +53,7 @@ const clearInputs = (): void => {
     RawData.value[0].Name = ''
     RawData.value[0].Surname = ''
     RawData.value[0].Cpf = ''
+    RawData.value[0].Telefone = ''
     RawData.value[0].Email = ''
     RawData.value[0].ConfirmEmail = ''
     RawData.value[0].Password = ''
@@ -102,6 +106,16 @@ async function submit(event: Event): Promise<void> {
         )
         return
     } 
+    if(RawData.value[0].Telefone.length <= 13) {
+        props.GenereteError(
+            document.getElementById('Telephone') as HTMLInputElement,
+            'classError' as string,
+            document.querySelector('.boxErrorTelephone') as HTMLDivElement,
+            document.querySelector('.boxErrorTelephone p') as HTMLParagraphElement,
+            'Telefone inválido!'
+        )
+        return
+    }
     if(!props.isEmailValue(RawData.value[0].Email)) {
         props.GenereteError(
             document.getElementById('Email') as HTMLInputElement,
@@ -142,7 +156,7 @@ async function submit(event: Event): Promise<void> {
     }
 
 
-    const endpoint = 'http://localhost:8080/user'
+    const endpoint = 'http://localhost:8080/user' as string
 
 
     const sucess = await RegisterUserCommon(endpoint, TratData.value);
@@ -179,8 +193,27 @@ function KeyInputs(event: Event): void {
 
     if(input.id == 'Cpf') {
         RawData.value[0].Cpf = props.maskCPF(RawData.value[0].Cpf)
+    }else if(input.id == 'Telephone') {
+        RawData.value[0].Telefone = props.applyPhoneMask(RawData.value[0].Telefone)
     }
 }
+
+const inputPassword = ref<HTMLInputElement | null>(null);
+
+function toggleIconEye (event: Event): void {
+    const element = event.target as HTMLInputElement;
+
+    element.classList.toggle('classEyeActive');
+
+    if (element.classList.contains('classEyeActive')) {
+        element.src = getImageUrl('icons8-visível-50.png')
+        inputPassword.value?.setAttribute('type', 'text')
+    } else {
+        element.src = getImageUrl('icons8-olho-100.png')
+        inputPassword.value?.setAttribute('type', 'password')
+    }
+}
+
 
 </script>
 
@@ -223,7 +256,7 @@ function KeyInputs(event: Event): void {
         </section>
 
         <section class="sections"> 
-            <aside class="asides_full asides">
+            <aside class="asides">
                 <input 
                  type="text" 
                  id="Cpf" 
@@ -234,6 +267,25 @@ function KeyInputs(event: Event): void {
                 >
                 <label for="Cpf">CPF</label>
                 <div class="containerMensageError boxErrorCpf">
+                    <p>Preencha o campo!</p>
+                    <div class="box_iconAlert">
+                        <img :src="getImageUrl('iconAlert.png')" alt="">
+                    </div>
+                </div>
+            </aside>
+
+
+            <aside class="asides">
+                <input 
+                 type="phone" 
+                 id="Telephone" 
+                 @keyup="props.styleInputFocus"
+                 @input="KeyInputs"
+                 v-model="RawData[0].Telefone"
+                 maxlength="14"
+                >
+                <label for="Telephone">Telefone</label>
+                <div class="containerMensageError boxErrorTelephone">
                     <p>Preencha o campo!</p>
                     <div class="box_iconAlert">
                         <img :src="getImageUrl('iconAlert.png')" alt="">
@@ -286,8 +338,13 @@ function KeyInputs(event: Event): void {
                  @keyup="props.styleInputFocus"
                  @input="KeyInputs"
                  v-model="RawData[0].Password"
+                 ref="inputPassword"
                 >
                 <label for="Password">Senha</label>
+
+                <div id="containerViewPassword" @click="toggleIconEye">
+                    <img :src="getImageUrl('icons8-olho-100.png')" alt="">
+                </div>
                 <div class="containerMensageError boxErrorPassword">
                     <p>Preencha o campo!</p>
                     <div class="box_iconAlert">
@@ -327,6 +384,27 @@ function KeyInputs(event: Event): void {
     flex-direction: column;
     color: #ffffff;
 }
+
+#containerViewPassword {
+    width: 20px;
+    position: relative;
+    /* left: 0; */
+    right: -95%;
+    top: -70%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    /* background-color: aqua; */
+}
+#containerViewPassword > img {
+    width: 100%;
+    height: 100%;
+}
+
 .asides_full {
     width: 100%;
     /* border: 2px solid green; */
@@ -367,7 +445,7 @@ input:-webkit-autofill {
 .asides > label {
     transform: translateY(-30px);
     transition: all 0.3s ease-in-out;
-    font-size: 1.2vw;
+    font-size: 1.1rem;
 }
 .asides > input:focus + label {
     transform: translateY(-55px);
@@ -419,7 +497,7 @@ input:-webkit-autofill {
     font-weight: 100;
     cursor: pointer;
     font-size: 1.1vw;
-    transition: all 0.3s ease;
+    transition: all 0.3s ease-in-out;
 }
 
 #buttonRegisterCommon:hover {

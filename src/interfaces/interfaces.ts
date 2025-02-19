@@ -8,6 +8,7 @@ export interface TypeRawData {
     Name: string;
     Surname: string;
     Cpf: string;
+    Telefone: string;
     Email: string;
     ConfirmEmail: string;
     Password: string;
@@ -17,6 +18,7 @@ export interface TypeTratData {
   cpf: string;
   email: string;
   password: string;
+  phoneNumber: string
 }
 
 
@@ -28,6 +30,7 @@ export interface TypeRawDataSeller {
   Cpf: string,
   Cnpj: string,
   LegalName: string,
+  Telephone: string,
   Email: string,
   ConfirmEmail: string,
   Password: string
@@ -36,8 +39,11 @@ export interface TypeRawDataSeller {
 
 export interface TypeTratDataSeller {
   name: string;
+  cpf: string;
   cnpj: string;
   email: string;
+  legalName: string;
+  phoneNumber: string
   password: string;
 }
 
@@ -52,4 +58,25 @@ export interface TypeDataLogin {
 export interface TypeTratDataLogin {
   email: string;
   password: string;
+}
+
+
+
+
+export interface UserData {
+  id: number;
+  name: string;
+  email: string;
+  cpf: string;
+}
+
+
+//INTERFACE PARA DADOS DE CRIAÇÃO DO MENU LATERAL DE CONFIGURAÇÕES
+export interface TypeDataCreateListFull {
+  name_summary: string;
+  dataUl: {
+      name_summary_category: string;
+      srcImgIcon_category: string;
+      listItem?: string[] | undefined;
+  }[]
 }

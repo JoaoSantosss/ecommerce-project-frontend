@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { defineProps, defineEmits } from 'vue';
 
+import ContentConfigListFull from './ContentConfigListFull.vue';
+
+
 const emit = defineEmits(['close-menu']);
 
 const  props = defineProps({
@@ -16,7 +19,7 @@ const  props = defineProps({
 
 
         <div class="sidebar">
-            <h1>teste</h1>
+            <ContentConfigListFull />
         </div>
 
 
@@ -55,7 +58,7 @@ const  props = defineProps({
     background: rgb(122, 122, 122);
     background-color: var(--color_navbar);
     z-index: 1001;
-    padding: 15vh 20px 20px 20px;
+    padding: 16vh 20px 20px 20px;
     color: var(--color--text);
 }
 
