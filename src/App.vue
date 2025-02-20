@@ -10,7 +10,7 @@ const route = useRoute()
 
 <template>
 
-  <Home v-if="!['/login', '/register', '/data-account'].includes(route.path)"/>
+  <Home v-if="!['/login', '/register', '/data-account', '/data-Address'].includes(route.path)"/>
   
 
   <router-view v-else></router-view>

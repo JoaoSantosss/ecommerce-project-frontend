@@ -49,15 +49,16 @@ function styleInputFocus(event: Event): void {
             </div>
 
             <div id="button_toggleFormDataAccount">
-                <Buttons :text="textButton" @click="toggleFormDataAccount"/>
+                <Buttons :text="textButton" :type="'button'" @click="toggleFormDataAccount" />
             </div>
 
         </div>
 
         <div id="containerFormDataAccount">
-            <FormAccount v-if="showFormDataAccount" :styleInputFocus="styleInputFocus"/>
+            <h2>Dados de conta</h2>
+            <FormAccount v-if="showFormDataAccount" :styleInputFocus="styleInputFocus" />
 
-            <FormAlterPassword v-else/>
+            <FormAlterPassword v-else :styleInputFocus="styleInputFocus" />
         </div>
     </div>
 </template>
@@ -67,7 +68,7 @@ function styleInputFocus(event: Event): void {
     width: 100%;
     min-height: 80vh;
     /* background-color: aliceblue */
-    border: 1px solid red;
+    /* border: 1px solid red; */
     display: flex;
     flex-direction: column;
     gap: 50px;
@@ -76,7 +77,7 @@ function styleInputFocus(event: Event): void {
 #containerTitleDataAccount {
     width: 100%;
     height: 13vh;
-    border: 1px solid green;
+    /* border: 1px solid green; */
     margin-top: 10vh;
     display: flex;
     justify-content: space-between;
@@ -88,7 +89,7 @@ function styleInputFocus(event: Event): void {
     display: flex;
     align-items: center;
     gap: 20px;
-    border: 2px solid blue;
+    /* border: 2px solid blue; */
 }
 h1 {
     color: var(--color--text);
@@ -98,7 +99,7 @@ h1 {
 
 #button_toggleFormDataAccount {
     width: 50%;
-    border: 2px solid red;
+    /* border: 2px solid red; */
     display: flex;
     justify-content: flex-end;
     align-items: center;
@@ -106,6 +107,10 @@ h1 {
 
 #containerFormDataAccount {
     width: 100%;
-    border: 1px solid rgb(0, 255, 34);
+    /* border: 1px solid rgb(0, 255, 34); */
+    color: var(--color--text);
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
 }
 </style>

@@ -3,12 +3,13 @@ import { defineProps } from 'vue';
 
 defineProps<{
     text: string
+    type?: "button" | "submit" | "reset";
 }>()
 
 </script>
 
 <template>
-    <button>{{ text }}</button>
+    <button :type="type">{{ text }}</button>
 </template>
 
 <style scoped>

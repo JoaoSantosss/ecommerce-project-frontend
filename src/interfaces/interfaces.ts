@@ -83,5 +83,7 @@ export interface TypeDataCreateListFull {
 
 export interface TypeRawDataAccount {
   Name: string;
-  Telephone: string
+  Telephone: string;
+  Email: string;
+  Cpf: string
 }

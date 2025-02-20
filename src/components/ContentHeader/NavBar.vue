@@ -33,7 +33,11 @@ function toggle_btn(btn: any): void {
 }
 
 function reloadPage(): void {
-    window.location.reload();
+    router.push('/')
+
+    setTimeout((): void => {
+        window.location.reload();
+    }, 100)
 }
 
 

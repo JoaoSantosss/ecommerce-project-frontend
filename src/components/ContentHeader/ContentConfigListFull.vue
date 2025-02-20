@@ -58,7 +58,7 @@ function FunOptionsCategory(event: Event): void {
 
         case 'Meus Endereços':
             console.log('Meus Endereços');
-            
+            RouterLogin('/data-Address')
             break;
 
 

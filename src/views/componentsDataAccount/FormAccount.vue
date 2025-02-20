@@ -1,39 +1,58 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import type * as interfaces from '../../interfaces/interfaces'
 import { getImageUrl } from '../../utils/imageHelper'
-
-const RawDataAccount = ref<interfaces.TypeRawDataAccount[]>([{
-    Name: '',
-    Telephone: '',
-}])
-
-
-console.log(RawDataAccount);
+import Buttons from '../../components/SubComponents/Buttons.vue'
 
 
 const props = defineProps<{
     styleInputFocus: (event: Event) => void;
 }>();
 
+const RawDataAccount = ref<interfaces.TypeRawDataAccount[]>([{
+    Name: 'exemple',
+    Telephone: 'exemple',
+    Email: 'exemple',
+    Cpf: 'exemple'
+}])
+
+
+
+function AlterDataAccount(): void {
+    const sections = document.querySelectorAll('.sections');
+    sections.forEach((section) => {
+        section.classList.toggle('NotClick');
+    })
+}
+
+onMounted((): void => {
+    const UserData = localStorage.getItem('UserData');
+    if (UserData) {
+        // console.log(JSON.parse(UserData));
+        const UserDataObj = JSON.parse(UserData) as interfaces.UserData;
+
+        RawDataAccount.value[0].Name = UserDataObj.name;
+        RawDataAccount.value[0].Email = UserDataObj.email;
+        RawDataAccount.value[0].Cpf = UserDataObj.cpf;
+        // RawDataAccount.value[0].Telephone = UserDataObj.telephone;
+        
+    }
+})
+
 async function submit(event: Event): Promise<void> {
     event.preventDefault();
 
-
+    // alert('submit')
+    
 }
 </script>
 
 <template>
-    <form @submit="submit" id="containerFormDataAccount">
-        <section class="sections">
+    <form @submit="submit">
+        <section class="sections NotClick">
             <aside class="asides">
-                <input 
-                 type="text" 
-                 id="Name" 
-                 @keyup="props.styleInputFocus"
-
-                >
-                <label for="Name">Nome</label>
+                <input type="text" id="Name" @keyup="props.styleInputFocus" v-model="RawDataAccount[0].Name">
+                <label for="Name" class="classActiveFocus">Nome</label>
                 <div class="containerMensageError boxErrorName">
                     <p>teste</p>
                     <div class="box_iconAlert">
@@ -43,14 +62,9 @@ async function submit(event: Event): Promise<void> {
             </aside>
 
             <aside class="asides">
-                <input 
-                 type="text" 
-                 id="Surname"
-                 @keyup="props.styleInputFocus"
-
-                >
-                <label for="Surname">Sobrenome</label>
-                <div class="containerMensageError boxErrorSurname">
+                <input type="text" id="Telephone" @keyup="props.styleInputFocus" v-model="RawDataAccount[0].Telephone">
+                <label for="Telephone" class="classActiveFocus">Telefone</label>
+                <div class="containerMensageError boxErrorTelephone">
                     <p>Preencha o campo!</p>
                     <div class="box_iconAlert">
                         <img :src="getImageUrl('iconAlert.png')" alt="">
@@ -58,20 +72,56 @@ async function submit(event: Event): Promise<void> {
                 </div>
             </aside>
         </section>
+
+
+        <section class="sections NotClick">
+            <aside class="asides">
+                <input type="text" id="Email" @keyup="props.styleInputFocus" v-model="RawDataAccount[0].Email">
+                <label for="Email" class="classActiveFocus">Email</label>
+                <div class="containerMensageError boxErrorEmail">
+                    <p>teste</p>
+                    <div class="box_iconAlert">
+                        <img :src="getImageUrl('iconAlert.png')" alt="">
+                    </div>
+                </div>
+            </aside>
+
+            <aside class="asides">
+                <input type="text" id="CPF" @keyup="props.styleInputFocus" v-model="RawDataAccount[0].Cpf">
+                <label for="CPF" class="classActiveFocus">CPF</label>
+                <div class="containerMensageError boxErrorCPF">
+                    <p>Preencha o campo!</p>
+                    <div class="box_iconAlert">
+                        <img :src="getImageUrl('iconAlert.png')" alt="">
+                    </div>
+                </div>
+            </aside>
+        </section>
+
+        <section class="sectionsFull">
+
+            <aside class="asidesFull">
+                <Buttons :text="'Alterar'" :type="'button'" @click="AlterDataAccount" />
+                <Buttons :text="'Salvar'" :type="'submit'" />
+            </aside>
+        </section>
     </form>
 </template>
 
-<style>
+<style scoped>
 
-#containerFormDataAccount {
-    border: 2px solid red;
+form {
+    /* border: 2px solid red; */
     width: 100%;
     height: 80%;
     display: flex;
     flex-direction: column;
     gap: 30px;
 }
-
+.NotClick {
+    pointer-events: none;
+    opacity: 0.4;
+}
 
 .sections {
     /* border: 2px solid blue; */
@@ -79,6 +129,14 @@ async function submit(event: Event): Promise<void> {
     display: flex;
     justify-content: space-between;
     gap: 10px;
+    
+}
+.sectionsFull {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 100px;
 }
 .asides {
     width: 45%;
@@ -87,7 +145,13 @@ async function submit(event: Event): Promise<void> {
     flex-direction: column;
     color: #ffffff;
 }
-
+.asidesFull {
+    width: 45%;
+    display: flex;
+    justify-content: flex-end;
+    color: #ffffff;
+    gap: 30px;
+}
 
 
 .asides > input {
@@ -122,7 +186,7 @@ input:-webkit-autofill {
 .asides > label {
     transform: translateY(-30px);
     transition: all 0.3s ease-in-out;
-    font-size: 1.1rem;
+    font-size: 1.5rem;
 }
 .asides > input:focus + label {
     transform: translateY(-55px);
