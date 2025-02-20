@@ -62,7 +62,7 @@ export interface TypeTratDataLogin {
 
 
 
-
+//INTERFACE PARA DADOS DE USUARIO APOS LOGAR
 export interface UserData {
   id: number;
   name: string;
@@ -79,4 +79,9 @@ export interface TypeDataCreateListFull {
       srcImgIcon_category: string;
       listItem?: string[] | undefined;
   }[]
+}
+
+export interface TypeRawDataAccount {
+  Name: string;
+  Telephone: string
 }

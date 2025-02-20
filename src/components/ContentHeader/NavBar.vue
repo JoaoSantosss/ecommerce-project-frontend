@@ -7,6 +7,7 @@ import { getImageUrl } from '../../utils/imageHelper'
 //imports components
 import ListFull from './ListFull.vue';
 import BurguerMenu from '../SubComponents/BurguerMenu.vue';
+import IconUser from '../SubComponents/IconUser.vue';
 
 
 
@@ -72,7 +73,8 @@ onMounted((): void => {
 
                 <div id="container_group_buttonsNavBar">
                     <aside id="container_path_login">
-                        <div id="box_iconUser"></div>
+                        <!-- <div id="box_iconUser"></div> -->
+                        <IconUser />
                             
                         <p v-if="showOptionsLogin" id="text_path_login">
                             Olá, <strong style="cursor: pointer;" @click="RouterLogin">Entre</strong>

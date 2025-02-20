@@ -5,10 +5,15 @@ import Home from '../layouts/Home.vue'
 import Login from '../views/componentsLogin/Login.vue'
 import Register from '../views/componentsLogin/Register.vue'
 
+
+import DataAccount from '../views/componentsDataAccount/DataAccount.vue'
+
+
 const routes: Route[] = [
   { path: '/', component: Home },
   { path: '/login', component: Login },
-  { path: '/register', component: Register }
+  { path: '/register', component: Register },
+  { path: '/data-account', component: DataAccount }
 ]
 
 const router = createRouter({

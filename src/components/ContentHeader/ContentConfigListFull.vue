@@ -2,6 +2,10 @@
 import { ref } from 'vue';
 import { getImageUrl } from '../../utils/imageHelper'
 import type * as interfaces from '../../interfaces/interfaces';
+import { useRouter } from 'vue-router'
+
+
+const router = useRouter()
 
 const DataCreateListFull = ref<interfaces.TypeDataCreateListFull[][]>([
     [
@@ -30,6 +34,11 @@ const DataCreateListFull = ref<interfaces.TypeDataCreateListFull[][]>([
 ])
 
 
+function RouterLogin(routerPage: string): void {
+    router.push(routerPage)
+}
+
+
 function FunOptionsCategory(event: Event): void {
     const summary = event.currentTarget as HTMLInputElement;
     const textOptionsCategory = summary.querySelector('p') as HTMLParagraphElement;
@@ -37,7 +46,7 @@ function FunOptionsCategory(event: Event): void {
     switch (textOptionsCategory.id) {
         case 'Minha Conta':
             console.log('Minha Conta');
-            
+            RouterLogin('/data-account')
             break;
     
 
